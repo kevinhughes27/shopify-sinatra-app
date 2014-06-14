@@ -27,6 +27,8 @@ else
     FileUtils.cp(generator_dir   + "/config.ru", app_dir + "/config.ru")
     FileUtils.cp(generator_dir   + "/Procfile",  app_dir + "/Procfile")
     FileUtils.cp(generator_dir   + "/Rakefile",  app_dir + "/Rakefile")
+    FileUtils.cp(generator_dir   + "/Gemfile",  app_dir + "/Gemfile")
+    FileUtils.cp(generator_dir   + "/README.md",  app_dir + "/README.md")
 
     Dir.chdir(app_dir)
 
