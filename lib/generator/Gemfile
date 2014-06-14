@@ -2,18 +2,18 @@ source 'https://rubygems.org'
 ruby "2.0.0"
 
 gem 'sinatra'
+gem 'sinatra-redis'
 gem 'sinatra-activerecord'
+gem 'sinatra-twitter-bootstrap', require: 'sinatra/twitter-bootstrap'
+gem 'rack-flash3', require: 'rack-flash'
 gem 'activesupport'
 gem 'attr_encrypted'
-gem 'rack-flash3', require: 'rack-flash'
-gem 'sinatra-twitter-bootstrap', require: 'sinatra/twitter-bootstrap'
-gem 'sinatra-redis'
-gem 'resque', '~> 1.22.0'
 gem 'foreman'
 gem 'rake'
-gem 'prawn'
-gem 'pony'
 
+gem 'resque', '~> 1.22.0'
+
+gem 'shopify-sinatra-app', require: 'sinatra/shopify'
 gem 'omniauth-shopify-oauth2'
 gem 'shopify_api'
 
@@ -26,6 +26,5 @@ group :development do
   gem 'rack-test'
   gem 'fakeweb'
   gem 'mocha', require: false
-  gem 'pry'
   gem 'byebug'
 end
