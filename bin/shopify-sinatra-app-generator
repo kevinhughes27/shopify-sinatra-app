@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+working_dir = Dir.pwd
+generator_dir = File.dirname(__FILE__)
+
+if ARGV.length < 2
+  puts "Usage:\n./shopify-sinatra-app new <app_name>"
+else
+  app_name = ARGV[1]
+  app_dir = working_dir + "/" + app_name
+
+  mkdir(app_dir)
+
+  cp_r(generator_dir + "/templates/config",    app_dir + "/config")
+  cp_r(generator_dir + "/templates/db",        app_dir + "/db")
+  cp_r(generator_dir + "/templates/lib",       app_dir + "/lib")
+  cp_r(generator_dir + "/templates/public",    app_dir + "/public")
+  cp_r(generator_dir + "/templates/views",     app_dir + "/views")
+
+  cp(generator_dir   + "/templates/config.ru", app_dir + "/config.ru")
+  cp(generator_dir   + "/templates/Procfile",  app_dir + "/Procfile")
+  cp(generator_dir   + "/templates/Rakefile",  app_dir + "/Rakefile")
+end
