@@ -28,6 +28,13 @@ else
     FileUtils.cp(generator_dir   + "/Procfile",  app_dir + "/Procfile")
     FileUtils.cp(generator_dir   + "/Rakefile",  app_dir + "/Rakefile")
 
+    Dir.chdir(app_dir)
+
+    pipe = IO.popen("bundle install")
+    while (line = pipe.gets)
+      print line
+    end
+
   rescue Errno::EEXIST => e
     puts "App directory alread exists, pick a new app name or delete the existing folder"
   end
