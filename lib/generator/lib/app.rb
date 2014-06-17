@@ -1,4 +1,4 @@
-require 'shopify-sinatra-app'
+require 'sinatra/shopify-sinatra-app'
 
 class SinatraApp < Sinatra::Base
   register Sinatra::Shopify
