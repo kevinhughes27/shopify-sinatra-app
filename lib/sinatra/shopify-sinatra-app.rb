@@ -9,10 +9,6 @@ require 'rack-flash'
 require 'omniauth-shopify-oauth2'
 require 'shopify_api'
 
-if Sinatra::Base.development? ||  Sinatra::Base.test?
-  require 'byebug'
-end
-
 module Sinatra
   module Shopify
 
@@ -85,6 +81,61 @@ module Sinatra
 
         status 200
       end
+
+      private
+
+      def get_session
+        shop_name = sanitize_shop_param(params)
+        shop = Shop.find_by(:name => shop_name)
+
+        return_to = request.env["sinatra.route"].split(' ').last
+
+        if shop.present?
+          session[:shopify] ||= {}
+          session[:shopify][:shop] = shop.name
+          session[:shopify][:token] = shop.token
+          redirect return_to
+        else
+          authenticate(return_to)
+        end
+      end
+
+      def authenticate(return_to = '/')
+        if shop_name = sanitize_shop_param(params)
+          redirect_url = "/auth/shopify?shop=#{shop_name}&return_to=#{base_url}#{return_to}"
+          fullpage_redirect_to redirect_url
+        else
+          redirect "/install"
+        end
+      end
+
+      def fullpage_redirect_to(redirect_url)
+        @fullpage_redirect_to = redirect_url
+
+        erb "<script type='text/javascript'>
+              window.top.location.href = '<%= @fullpage_redirect_to %>';
+            </script>", :layout => false
+      end
+
+      def sanitize_shop_param(params)
+        return unless params[:shop].present?
+        name = params[:shop].to_s.strip
+        name += '.myshopify.com' if !name.include?("myshopify.com") && !name.include?(".")
+        name.gsub!('https://', '')
+        name.gsub!('http://', '')
+
+        u = URI("http://#{name}")
+        u.host.ends_with?(".myshopify.com") ? u.host : nil
+      end
+
+      def verify_shopify_webhook
+        data = request.body.read.to_s
+        digest = OpenSSL::Digest::Digest.new('sha256')
+        calculated_hmac = Base64.encode64(OpenSSL::HMAC.digest(digest, app.settings.shared_secret, data)).strip
+        request.body.rewind
+
+        calculated_hmac == request.env['HTTP_X_SHOPIFY_HMAC_SHA256']
+      end
     end
 
     def self.registered(app)
@@ -92,48 +143,50 @@ module Sinatra
       app.register Sinatra::ActiveRecordExtension
       app.register Sinatra::Twitter::Bootstrap::Assets
 
-      app.set :database_file, "config/database.yml"
-      app.set :views, "views"
-      app.set :public_folder, "public"
+      app.set :database_file, File.expand_path("config/database.yml")
+      app.set :views, File.expand_path("views")
+      app.set :public_folder, File.expand_path("public")
       app.set :erb, :layout => :'layouts/application'
       app.set :protection, :except => :frame_options
 
       app.enable :sessions
       app.enable :inline_templates
 
-      SCOPE = YAML.load(File.read("config/app.yml"))["scope"]
+      app.set :scope, YAML.load(File.read(File.expand_path("config/app.yml")))["scope"]
 
-      if Sinatra::Base.production?
-        API_KEY = ENV['SHOPIFY_API_KEY']
-        SHARED_SECRET = ENV['SHOPIFY_SHARED_SECRET']
-        SECRET = ENV['SECRET']
+      if app.production?
+        app.set :api_key, ENV['SHOPIFY_API_KEY']
+        app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
+        app.set :secret, ENV['SECRET']
       else
-        API_KEY = `sed -n '1p' .env`.split('=').last.strip
-        SHARED_SECRET = `sed -n '2p' .env`.split('=').last.strip
-        SECRET = `sed -n '3p' .env`.split('=').last.strip
+        app.set :api_key, `sed -n '1p' .env`.split('=').last.strip
+        app.set :shared_secret, `sed -n '2p' .env`.split('=').last.strip
+        app.set :secret, `sed -n '3p' .env`.split('=').last.strip
       end
+
+      Shop.secret = app.settings.secret
 
       app.use Rack::Flash, :sweep => true
       app.use Rack::MethodOverride
       app.use Rack::Session::Cookie, :key => '#{base_url}.session',
-                                 :path => '/',
-                                 :secret => SECRET,
-                                 :expire_after => 2592000
+                                     :path => '/',
+                                     :secret => app.settings.secret,
+                                     :expire_after => 2592000
 
-      REDIS_URL = ENV["REDISCLOUD_URL"] || "redis://localhost:6379/"
-      redis_uri = URI.parse(REDIS_URL)
-      Resque.redis = Redis.new(:host => redis_uri.host,
+      app.set :redis_url, ENV["REDISCLOUD_URL"] || "redis://localhost:6379/"
+      redis_uri = URI.parse(app.settings.redis_url)
+      Resque.redis = ::Redis.new(:host => redis_uri.host,
                                :port => redis_uri.port,
                                :password => redis_uri.password)
       Resque.redis.namespace = "resque"
-      app.set :redis, REDIS_URL
+      app.set :redis, app.settings.redis_url
 
       app.use OmniAuth::Builder do
         provider :shopify,
-          API_KEY,
-          SHARED_SECRET,
+          app.settings.api_key,
+          app.settings.shared_secret,
 
-          :scope => SCOPE,
+          :scope => app.settings.scope,
 
           :setup => lambda { |env|
             params = Rack::Utils.parse_query(env['QUERY_STRING'])
@@ -142,8 +195,8 @@ module Sinatra
           }
       end
 
-      ShopifyAPI::Session.setup({:api_key => API_KEY,
-                                 :secret => SHARED_SECRET})
+      ShopifyAPI::Session.setup({:api_key => app.settings.api_key,
+                                 :secret => app.settings.shared_secret})
 
       app.get '/install' do
         erb :install, :layout => false
@@ -185,67 +238,21 @@ module Sinatra
              <h3>message:<h3> <pre>#{params}</pre>", :layout => false
       end
     end
+  end
 
-    private
+  class Shop < ActiveRecord::Base
 
-    def get_session
-      shop_name = sanitize_shop_param(params)
-      shop = Shop.find_by(:name => shop_name)
-
-      return_to = request.env["sinatra.route"].split(' ').last
-
-      if shop.present?
-        session[:shopify] ||= {}
-        session[:shopify][:shop] = shop.name
-        session[:shopify][:token] = shop.token
-        redirect return_to
-      else
-        authenticate(return_to)
-      end
+    def self.secret=(secret)
+      @secret = secret
     end
 
-    def authenticate(return_to = '/')
-      if shop_name = sanitize_shop_param(params)
-        redirect_url = "/auth/shopify?shop=#{shop_name}&return_to=#{base_url}#{return_to}"
-        fullpage_redirect_to redirect_url
-      else
-        redirect "/install"
-      end
+    def self.secret
+      @secret
     end
 
-    def fullpage_redirect_to(redirect_url)
-      @fullpage_redirect_to = redirect_url
-
-      erb "<script type='text/javascript'>
-            window.top.location.href = '<%= @fullpage_redirect_to %>';
-          </script>", :layout => false
-    end
-
-    def sanitize_shop_param(params)
-      return unless params[:shop].present?
-      name = params[:shop].to_s.strip
-      name += '.myshopify.com' if !name.include?("myshopify.com") && !name.include?(".")
-      name.gsub!('https://', '')
-      name.gsub!('http://', '')
-
-      u = URI("http://#{name}")
-      u.host.ends_with?(".myshopify.com") ? u.host : nil
-    end
-
-    def verify_shopify_webhook
-      data = request.body.read.to_s
-      digest = OpenSSL::Digest::Digest.new('sha256')
-      calculated_hmac = Base64.encode64(OpenSSL::HMAC.digest(digest, SHARED_SECRET, data)).strip
-      request.body.rewind
-
-      calculated_hmac == request.env['HTTP_X_SHOPIFY_HMAC_SHA256']
-    end
+    attr_encrypted :token, :key => secret, :attribute => 'token_encrypted'
+    validates_presence_of :name, :token
   end
 
   register Shopify
-end
-
-class Shop < ActiveRecord::Base
-  attr_encrypted :token, :key => ShopifyApp::SECRET, :attribute => 'token_encrypted'
-  validates_presence_of :name, :token
 end
