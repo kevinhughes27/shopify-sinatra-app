@@ -154,17 +154,9 @@ module Sinatra
 
       app.set :scope, YAML.load(File.read(File.expand_path("config/app.yml")))["scope"]
 
-      if app.production?
-        app.set :api_key, ENV['SHOPIFY_API_KEY']
-        app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
-        app.set :secret, ENV['SECRET']
-      else
-        app.set :api_key, `sed -n '1p' .env`.split('=').last.strip
-        app.set :shared_secret, `sed -n '2p' .env`.split('=').last.strip
-        app.set :secret, `sed -n '3p' .env`.split('=').last.strip
-      end
-
-      Shop.secret = app.settings.secret
+      app.set :api_key, ENV['SHOPIFY_API_KEY']
+      app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
+      app.set :secret, ENV['SECRET']
 
       app.use Rack::Flash, :sweep => true
       app.use Rack::MethodOverride
@@ -242,12 +234,8 @@ module Sinatra
 
   class Shop < ActiveRecord::Base
 
-    def self.secret=(secret)
-      @secret = secret
-    end
-
     def self.secret
-      @secret
+      @secret ||= ENV['SECRET']
     end
 
     attr_encrypted :token, :key => secret, :attribute => 'token_encrypted'

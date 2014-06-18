@@ -4,14 +4,6 @@ require 'rake/testtask'
 require './lib/app'
 
 task :server do
-  # api_key = `sed -n '1p' .env`
-  # shared_secret = `sed -n '2p' .env`
-  # secret = `sed -n '3p' .env`
-
-  # `export SHOPIFY_API_KEY=#{api_key}`
-  # `export SHOPIFY_SHARED_SECRET=#{shared_secret}`
-  # `export SECRET=#{secret}`
-
   pipe = IO.popen("bundle exec rackup config.ru -p 4567")
   while (line = pipe.gets)
     print line

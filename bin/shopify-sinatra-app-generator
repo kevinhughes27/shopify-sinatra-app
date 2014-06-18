@@ -37,7 +37,7 @@ else
       print line
     end
 
-    pipe = IO.popen("rake db:migrate")
+    pipe = IO.popen("bundle exec rake db:migrate")
     while (line = pipe.gets)
       print line
     end
