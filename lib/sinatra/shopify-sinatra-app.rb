@@ -1,13 +1,15 @@
 require 'sinatra/base'
-require 'sinatra/activerecord'
 require 'sinatra/redis'
-require 'resque'
+require 'sinatra/activerecord'
 require 'sinatra/twitter-bootstrap'
-require 'active_support/all'
-require 'attr_encrypted'
+
+require 'resque'
 require 'rack-flash'
-require 'omniauth-shopify-oauth2'
+require 'attr_encrypted'
+require 'active_support/all'
+
 require 'shopify_api'
+require 'omniauth-shopify-oauth2'
 
 module Sinatra
   module Shopify

@@ -2,3 +2,16 @@
 
 <h3>Shopify Sinatra App</h3>
 <p>Welcome!</p>
+
+<h3>Products</h3>
+<table class="table table-striped table-hover">
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td>
+          <a href=<%="https://#{@shop.name}/admin/products/#{product.product_id}"%> target="_blank"> <%= product.product_id %> </a>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
