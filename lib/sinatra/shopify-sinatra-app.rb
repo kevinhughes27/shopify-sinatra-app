@@ -76,10 +76,10 @@ module Sinatra
       def webhook_job(jobKlass)
         return unless verify_shopify_webhook
 
-        params = ActiveSupport::JSON.decode(request.body.read.to_s)
         shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
+        params = ActiveSupport::JSON.decode(request.body.read.to_s)
 
-        Resque.enqueue(jobKlass, params, shop_name)
+        Resque.enqueue(jobKlass, shop_name, params)
 
         status 200
       end

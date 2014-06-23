@@ -70,21 +70,52 @@ SECRET=<generate a random string to encrypt credentials with>
 Shopify::Methods
 ----------------
 
-install
+`shopify_session` - The main method of the framework, most of your routes will use this method to acquire a valid shopify session and then perform api calls to Shopfiy. The method simply takes a block of code and makes the shop_name available to you after activating an api session. Here is an example endpoint that displays products:
 
-uninstall
+```ruby
+get '/products.json' do
+  shopify_session do |shop_name|
+    products = ShopifyAPI::Product.all(limit: 5)
+    products.to_json
+  end
+end
+```
 
-logout
+`webhook_session` - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the shop and webhook data as a hash available (note only works for json webhooks, don't use xml). Here is an example that listens to a order creation webhook:
 
-shopify_session
+```ruby
+post '/order.json' do
+  webhook_session do |shop, params|
+    # do something with the data
+  end
+end
+```
 
-webhook_session
+`webhook_job` - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a 200 to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name` and the webhook data as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
 
-webhook_job
+```ruby
+post '/order.json' do
+  webhook_job(OrderWebhookJob)
+end
 
-current_shop
+class OrderWebhookJob
+  @queue = :default
 
-base_url
+  def self.perform(shop_name, params)
+    # do something with the data
+  end
+end
+```
+
+`install` - This is a private method provided with the framework that gets called when the app is authorized for the first time. You should fill this method in with anything you need to initialize on install, for example webhooks and services on shopify or any other database models you have created specific to a shop.
+
+`uninstall` - This method gets called when your app recieves an uninstall webhook from shopify. You should override this method in your class and do any appropriate clean up when the app is removed from a shop.
+
+`logout` - This method clears the current session data in the app
+
+`current_shop` - Returns the name of the current shop
+
+`base_url` - This returns the url of the app
 
 
 Deploying
@@ -93,7 +124,7 @@ Deploying
 This template was created with deploying to Heroku in mind. Heroku is a great cloud based app hosting provider that makes it incredibly easy to get an application into a product environment. To create a new heroku application download the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart) and create a new application:
 
 ```
-heroku apps:create <my_fulfillment_app>
+heroku apps:create <your new app name>
 ```
 
 You will also need to add the following (free) add-ons to your new Heroku app:
