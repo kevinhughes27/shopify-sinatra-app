@@ -38,7 +38,7 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 `Gemfile` --> manages the dependencies of the app
 
-`lib/app.rb` --> This file is the skeleton app file. More details on how to use the methods provided by this extension are given in the following section.
+`lib/app.rb` --> This file is the skeleton app file. More details on how to use the methods provided by this extension are given in the following section. There are more comments inside this file explaining the skeleton app.
 
 `Procfile` --> Specific for deploying to Heroku, this file tells heroku how to run the app
 
