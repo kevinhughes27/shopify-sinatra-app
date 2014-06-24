@@ -35,6 +35,8 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 `config/database.yml` --> The database config for active record. Initially this is setup to use sqlite3 for development and testing which you may want to change to mimic your production database.
 
+`.env` --> a hidden file not tracked by source control for storing credentials etc. to be set as environment variables
+
 `config.ru` --> Rackup file - describes how to run a rack based app
 
 `Gemfile` --> manages the dependencies of the app
@@ -62,7 +64,7 @@ Note - The shopify-sinatra-app creates an embedded app! You need change the embe
 
 Also note that when developing locally you'll need to enable unsafe javascripts in your browser for the embedded sdk to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started)
 
-After creating your new application you need to create a `.env` file and add the following lines:
+After creating your new application you need to edit the `.env` file and add the following lines:
 
 ```
 SHOPIFY_API_KEY=<your api key>

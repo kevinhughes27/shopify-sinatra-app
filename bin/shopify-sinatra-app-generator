@@ -24,12 +24,14 @@ else
     FileUtils.cp_r(generator_dir + "/public",    app_dir + "/public")
     FileUtils.cp_r(generator_dir + "/views",     app_dir + "/views")
 
-    FileUtils.cp(generator_dir   + "/.env",      app_dir + "/.env")
+    FileUtils.cp(generator_dir   + "/.gitignore",      app_dir + "/.gitignore")
     FileUtils.cp(generator_dir   + "/config.ru", app_dir + "/config.ru")
     FileUtils.cp(generator_dir   + "/Procfile",  app_dir + "/Procfile")
     FileUtils.cp(generator_dir   + "/Rakefile",  app_dir + "/Rakefile")
     FileUtils.cp(generator_dir   + "/Gemfile",   app_dir + "/Gemfile")
     FileUtils.cp(generator_dir   + "/README.md", app_dir + "/README.md")
+
+    FileUtils.touch ".env"
 
     Dir.chdir(app_dir)
 
