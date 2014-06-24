@@ -19,10 +19,6 @@ module Sinatra
         raise NotImplementedError
       end
 
-      def uninstall
-        raise NotImplementedError
-      end
-
       def logout
         session[:shopify] = nil
       end
@@ -154,7 +150,8 @@ module Sinatra
       app.enable :sessions
       app.enable :inline_templates
 
-      app.set :scope, YAML.load(File.read(File.expand_path("config/app.yml")))["scope"]
+      #override in app when required
+      app.set :scope, 'read_products, read_orders'
 
       app.set :api_key, ENV['SHOPIFY_API_KEY']
       app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
@@ -194,11 +191,6 @@ module Sinatra
 
       app.get '/install' do
         erb :install, :layout => false
-      end
-
-      # endpoint for the app/uninstall webhook
-      app.post '/uninstall.json' do
-        uninstall
       end
 
       app.post '/login' do

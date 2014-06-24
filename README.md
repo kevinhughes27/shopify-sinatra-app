@@ -28,11 +28,6 @@ shopify-sinatra-app-generator new <your new app name>
 
 This will create a new skeleton shopify-sinatra-app. The generator will create several default files for you rather than having them bundled in the sinatra extension - its worthwhile to read this section to understand what each of these files is for.
 
-`config/app.yml` --> Some important config information is contained in this file.
-  * scope: The scope of your app (what your app can access from the Shopify store once installed, e.g. read_products), this will be read by your app and used when your app is installed.
-
-  * uninstall_webhook: Initially an uninstall webhook is also defined in this file, although without a proper url, this file is a good place to define objects that need to be created on Shopify when your app is installed like webhooks, fulfillment and carrier services.
-
 `config/database.yml` --> The database config for active record. Initially this is setup to use sqlite3 for development and testing which you may want to change to mimic your production database.
 
 `.env` --> a hidden file not tracked by source control for storing credentials etc. to be set as environment variables
@@ -61,8 +56,6 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 You'll need to create a Shopify Partner Account and a new application. You can make an account [here](http://www.shopify.ca/partners) and see this [tutorial](http://docs.shopify.com/api/the-basics/getting-started) for creating a new application.
 
 Note - The shopify-sinatra-app creates an embedded app! You need change the embedded setting to enabled in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) for your app. If you don't want your app to be embedded then remove the related code in `layout/application.erb` and delete the `layout/_top_bar.erb` file and the references to it in the other views.
-
-Also note that when developing locally you'll need to enable unsafe javascripts in your browser for the embedded sdk to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started)
 
 After creating your new application you need to edit the `.env` file and add the following lines:
 
@@ -115,13 +108,38 @@ end
 
 `install` - This is a private method provided with the framework that gets called when the app is authorized for the first time. You should fill this method in with anything you need to initialize on install, for example webhooks and services on shopify or any other database models you have created specific to a shop.
 
-`uninstall` - This method gets called when your app recieves an uninstall webhook from shopify. You should override this method in your class and do any appropriate clean up when the app is removed from a shop.
-
 `logout` - This method clears the current session data in the app
 
 `current_shop` - Returns the name of the current shop
 
 `base_url` - This returns the url of the app
+
+shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK. The following is an example of how to use a flash message in a route:
+
+```
+post '/flash_message' do
+  flash[:notice] = "Flash Message!"
+  redirect '/'
+end
+```
+
+note - a flash must be followed by a redirect or it won't work!
+
+Developing
+----------
+To run the app locally we use `foreman` which comes with the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart). Foreman handles running our application and setting our credentials as environment variables. To run the application type:
+
+```
+foreman start -p 4567
+```
+
+Debugging ...
+
+You can set the application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to be `http://localhost:4567/` which will allow you to install your app on a live shop while running it locally.
+
+Ngrok ...
+
+When developing locally you'll need to enable unsafe javascripts in your browser for the Embedded App SDK to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started).
 
 
 Deploying
@@ -178,7 +196,7 @@ heroku scale web=1 resque=1
 
 Note - if you are not using any background queue for processing webhooks then you do not need the redis add-on or the resque dyno so you can set it to 0.
 
-Make sure you set your shopify apps url to your Heroku app url in the Shopify Partner area https://app.shopify.com/services/partners/api_clients.
+Make sure you set your shopify apps url to your Heroku app url (and make sure to use the `https` version or else the Embedded App SDK won't work) in the Shopify Partner area https://app.shopify.com/services/partners/api_clients.
 
 Contributing
 ------------

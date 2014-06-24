@@ -2,37 +2,49 @@ require 'sinatra/shopify-sinatra-app'
 
 class SinatraApp < Sinatra::Base
   register Sinatra::Shopify
+  set :scope, 'read_products, read_orders'
 
+  # Your App's Home page
+  # this is a simple example that fetches some products
+  # from Shopify and displays them inside your app
   get '/' do
-    # your app's Home page
     shopify_session do |shop_name|
-      @shop_name = shop_name
-      @products = ShopifyAPI::Product.all(limit: 5)
+      @products = ShopifyAPI::Product.all
       erb :home
+    end
+  end
+
+  # this endpoint recieves the uninstall webhook
+  # and cleans up data, add to this endpoint as your app
+  # stores more data.
+  post '/uninstall' do
+    webhook_session do |shop, params|
+      shop.destroy
     end
   end
 
   private
 
+  # This method gets called when your app is installed.
+  # setup any webhooks or services you need on Shopify
+  # inside here.
   def install
-    # setup any webhooks or services you need when your app is installed
     shopify_session do |shop_name|
       params = YAML.load(File.read("config/app.yml"))
 
-      # create the uninstall webhook
-      uninstall_webhook = ShopifyAPI::Webhook.new(params["uninstall_webhook"])
-      unless ShopifyAPI::Webhook.find(:all).include?(uninstall_webhook)
-        uninstall_webhook.save
-      end
+      # create an uninstall webhook, this webhook gets sent
+      # when your app is uninstalled from a shop. It is good
+      # practice to clean up any data from a shop when they
+      # uninstall your app.
+      uninstall_webhook = ShopifyAPI::Webhook.new({
+        topic: "app/uninstalled",
+        address: "#{base_url}/uninstall",
+        format: "json"
+      })
+      uninstall_webhook.save
     end
-    redirect '/'
-  end
 
-  def uninstall
-    # remove data for a shop when they uninstall your app
-    webhook_session do |shop, params|
-      shop.destroy
-    end
+    redirect '/'
   end
 
 end

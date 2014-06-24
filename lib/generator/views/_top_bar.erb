@@ -2,7 +2,7 @@
 
   ShopifyApp.ready(function(){
     ShopifyApp.Bar.initialize({
-      icon: 'icon.png'
+      icon: '<%= "#{base_url}/icon.png" %>'
     });
 
     <% if flash[:notice] %>

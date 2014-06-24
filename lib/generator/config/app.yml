@@ -1,6 +1,0 @@
-scope: 'read_products, read_orders'
-
-uninstall_webhook:
-  topic: "app/uninstalled"
-  address: "your apps url"
-  format: "json"
