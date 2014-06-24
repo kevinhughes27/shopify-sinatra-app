@@ -9,7 +9,7 @@
     <% @products.each do |product| %>
       <tr>
         <td>
-          <a href=<%="https://#{@shop.name}/admin/products/#{product.product_id}"%> target="_blank"> <%= product.product_id %> </a>
+          <a href=<%="https://#{@shop_name}/admin/products/#{product.id}"%> target="_blank"> <%= product.id %> </a>
         </td>
       </tr>
     <% end %>

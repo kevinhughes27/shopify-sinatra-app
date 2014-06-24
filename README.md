@@ -58,6 +58,10 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 You'll need to create a Shopify Partner Account and a new application. You can make an account [here](http://www.shopify.ca/partners) and see this [tutorial](http://docs.shopify.com/api/the-basics/getting-started) for creating a new application.
 
+Note - The shopify-sinatra-app creates an embedded app! You need change the embedded setting to enabled in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) for your app. If you don't want your app to be embedded then remove the related code in `layout/application.erb` and delete the `layout/_top_bar.erb` file and the references to it in the other views.
+
+Also note that when developing locally you'll need to enable unsafe javascripts in your browser for the embedded sdk to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started)
+
 After creating your new application you need to create a `.env` file and add the following lines:
 
 ```
@@ -121,7 +125,17 @@ end
 Deploying
 ---------
 
-This template was created with deploying to Heroku in mind. Heroku is a great cloud based app hosting provider that makes it incredibly easy to get an application into a product environment. To create a new heroku application download the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart) and create a new application:
+This template was created with deploying to Heroku in mind. Heroku is a great cloud based app hosting provider that makes it incredibly easy to get an application into a product environment.
+
+Before you can get started with Heroku you need to create a git repo for you application:
+
+```
+git init
+git add .
+git commit -m "initial commit"
+```
+
+Now you can create a new heroku application. Download the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart) and run the following command to create a new application:
 
 ```
 heroku apps:create <your new app name>
@@ -134,6 +148,26 @@ heroku addons:add heroku-postgresql
 heroku addons:add rediscloud
 ```
 
+Now we can deploy the new application to Heroku. Deploying to Heroku is as simple as pushing the code using git:
+
+```
+git push heroku master
+```
+
+A `rake deploy2heroku` command is included in the generated Rakefile which does just this.
+
+Now that our application is deployed we need to run `rake db:migrate` to initialize our database on Heroku. To do this run:
+
+```
+heroku run rake db:migrate
+```
+
+We also need to set our environment variables on Heroku. The environment variables are stored in `.env` and are not tracked by git. This is to protect your credentials in the case of a source control breach. Heroku provides a command to set environment variables: `heroku config:set VAR=foo`. In the generated Rakefile there is a helper method that will properly set all the variables in your `.env` file:
+
+```
+rake creds2heroku
+```
+
 and make sure you have at least 1 dyno for web and resque:
 
 ```
@@ -141,6 +175,8 @@ heroku scale web=1 resque=1
 ```
 
 Note - if you are not using any background queue for processing webhooks then you do not need the redis add-on or the resque dyno so you can set it to 0.
+
+Make sure you set your shopify apps url to your Heroku app url in the Shopify Partner area https://app.shopify.com/services/partners/api_clients.
 
 Contributing
 ------------

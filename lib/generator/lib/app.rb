@@ -6,7 +6,7 @@ class SinatraApp < Sinatra::Base
   get '/' do
     # your app's Home page
     shopify_session do |shop_name|
-      @shop = Shop.find_by(:name => shop_name)
+      @shop_name = shop_name
       @products = ShopifyAPI::Product.all(limit: 5)
       erb :home
     end
