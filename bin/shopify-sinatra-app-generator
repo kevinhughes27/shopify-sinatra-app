@@ -15,6 +15,9 @@ else
   app_name = ARGV[1]
   app_dir = working_dir + "/" + app_name
 
+  puts "Generating new app: #{app_name}"
+  puts "fullpath: #{app_dir}"
+
   begin
     Dir.mkdir(app_dir)
 

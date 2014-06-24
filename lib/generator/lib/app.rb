@@ -33,8 +33,6 @@ class SinatraApp < Sinatra::Base
   # inside here.
   def install
     shopify_session do
-      params = YAML.load(File.read("config/app.yml"))
-
       # create an uninstall webhook, this webhook gets sent
       # when your app is uninstalled from a shop. It is good
       # practice to clean up any data from a shop when they
