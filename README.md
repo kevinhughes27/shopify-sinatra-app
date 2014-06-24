@@ -83,7 +83,7 @@ get '/products.json' do
 end
 ```
 
-**webhook_session** - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the webhook data available as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to a order creation webhook:
+**webhook_session** - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the `webhook_data` available as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
 
 ```ruby
 post '/order.json' do
@@ -93,7 +93,7 @@ post '/order.json' do
 end
 ```
 
-**webhook_job** - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a 200 to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name`, `shop_token` and the webhook data as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
+**webhook_job** - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a `200` to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name`, `shop_token` and the `webhook_data` as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
 
 ```ruby
 post '/order.json' do
@@ -109,15 +109,15 @@ class OrderWebhookJob
 end
 ```
 
-**install** - This is a private method provided with the framework that gets called when the app is authorized for the first time. You should fill this method in with anything you need to initialize on install, for example webhooks and services on shopify or any other database models you have created specific to a shop.
+**install** - This is a private method provided with the framework that gets called when the app is authorized for the first time. You should fill this method in with anything you need to initialize on install, for example webhooks and services on Shopify or any other database models you have created specific to a shop.
 
-**logout** - This method clears the current session data in the app
+**logout** - This method clears the current session
 
 **current_shop** - Returns the name of the current shop (format: example.myshopify.com)
 
 **base_url** - This returns the url of the app
 
-shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK. Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
+shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
 ```
 post '/flash_message' do
@@ -140,9 +140,9 @@ To run the app locally we use `foreman` which comes with the [Heroku Toolbelt](h
 foreman run bundle exec rackup config.ru
 ```
 
-Note - we use `foreman run ...` not foreman start because we only want to start the single process that is our app. This means if you add a debugger in your app it will trigger properly in the command line when the debugger is hit. If you don't have any debuggers feel free to use `foreman start -p 4567`.
+Note - we use `foreman run ...` not `foreman start ...` because we only want to start the single process that is our app. This means if you add a debugger in your app it will trigger properly in the command line when the debugger is hit. If you don't have any debuggers feel free to use `foreman start -p 4567`.
 
-To debug your app simply add `require 'byebug'` at the top and then type `byebug` where you would like to drop into an interactive session. You may also want to try out Pry.
+To debug your app simply add `require 'byebug'` at the top and then type `byebug` where you would like to drop into an interactive session. You may also want to try out [Pry](http://pryrepl.org/).
 
 While running the app locally you'll be able to test the install and other routes because your browser is aware of your local application but if you want to test a route that listens to a webhook this will not work because Shopify cannot talk to your local web application. You could expose your local application to the web but an easier solution is to use a tool called [Ngrok](https://ngrok.com/). Download Ngrok and run it on port 4567 (or whichever port you  are using):
 
@@ -156,7 +156,7 @@ Ngrok will report what address your app is available at, leave Ngrok running and
 Deploying
 ---------
 
-This template was created with deploying to Heroku in mind. Heroku is a great cloud based app hosting provider that makes it incredibly easy to get an application into a product environment.
+This template was created with deploying to Heroku in mind. Heroku is a cloud based app hosting provider that makes it easy to get an application into a product environment.
 
 Before you can get started with Heroku you need to create a git repo for you application:
 
