@@ -127,15 +127,19 @@ note - a flash must be followed by a redirect or it won't work!
 
 Developing
 ----------
+You can set the application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to be `http://localhost:4567/` which will allow you to install your app on a live shop while running it locally.
+
+When developing locally you'll need to enable unsafe javascripts in your browser for the Embedded App SDK to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started).
+
 To run the app locally we use `foreman` which comes with the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart). Foreman handles running our application and setting our credentials as environment variables. To run the application type:
 
 ```
-foreman start -p 4567
+foreman run bundle exec rackup config.ru
 ```
 
-Debugging ...
+Note - we use `foreman run ...` not foreman start because we only want to start the single process that is our app. This means if you add a debugger in your app it will trigger properly in the command line when the debugger is hit. If you don't have any debuggers feel free to use `foreman start -p 4567`.
 
-You can set the application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to be `http://localhost:4567/` which will allow you to install your app on a live shop while running it locally.
+To debug your app simply add `require 'byebug'` at the top and then type `byebug` where you would like to drop into an interactive session. You may also want to try out Pry.
 
 While running the app locally you'll be able to test the install and other routes because your browser is aware of your local application but if you want to test a route that listens to a webhook this will not work because Shopify cannot talk to your local web application. You could expose your local application to the web but an easier solution is to use a tool called [Ngrok](https://ngrok.com/). Download Ngrok and run it on port 4567 (or whichever port you  are using):
 
@@ -144,8 +148,6 @@ While running the app locally you'll be able to test the install and other route
 ```
 
 Ngrok will report what address your app is available at, leave Ngrok running and then create your webhook to point to the ngrok url plus your route e.g. `<ngrok url>/webhook_test.json`. Now trigger the webhook you are testing and it will get forwarded through ngrok to your local web application allowing you to use debuggers and repls to complete your code.
-
-When developing locally you'll need to enable unsafe javascripts in your browser for the Embedded App SDK to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started).
 
 
 Deploying
