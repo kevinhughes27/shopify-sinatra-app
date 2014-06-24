@@ -30,6 +30,8 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 `config/database.yml` --> The database config for active record. Initially this is setup to use sqlite3 for development and testing which you may want to change to mimic your production database.
 
+`.gitignore` --> tells git which files to ignore, namely `.env` you may find more things you want to add to this file.
+
 `.env` --> a hidden file not tracked by source control for storing credentials etc. to be set as environment variables
 
 `config.ru` --> Rackup file - describes how to run a rack based app
