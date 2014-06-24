@@ -57,7 +57,7 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 You'll need to create a Shopify Partner Account and a new application. You can make an account [here](http://www.shopify.ca/partners) and see this [tutorial](http://docs.shopify.com/api/the-basics/getting-started) for creating a new application.
 
-Note - The shopify-sinatra-app creates an embedded app! You need change the embedded setting to enabled in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) for your app. If you don't want your app to be embedded then remove the related code in `layout/application.erb` and delete the `layout/_top_bar.erb` file and the references to it in the other views.
+Note - The shopify-sinatra-app creates an embedded app! You need change the embedded setting to `enabled` in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) for your app. If you don't want your app to be embedded then remove the related code in `layout/application.erb` and delete the `layout/_top_bar.erb` file and the references to it in the other views.
 
 After creating your new application you need to edit the `.env` file and add the following lines:
 
@@ -67,11 +67,12 @@ SHOPIFY_SHARED_SECRET=<your shared secret>
 SECRET=<generate a random string to encrypt credentials with>
 ```
 
+If your app has any other secret credentials you should add them to this file.
 
 Shopify::Methods
 ----------------
 
-`shopify_session` - The main method of the framework, most of your routes will use this method to acquire a valid shopify session and then perform api calls to Shopfiy. The method activates a Shopify API session for you and accepts a block inside of which you can use the ShopifyAPI. Here is an example endpoint that displays products:
+**shopify_session** - The main method of the framework, most of your routes will use this method to acquire a valid shopify session and then perform api calls to Shopfiy. The method activates a Shopify API session for you and accepts a block inside of which you can use the ShopifyAPI. Here is an example endpoint that displays products:
 
 ```ruby
 get '/products.json' do
@@ -82,7 +83,7 @@ get '/products.json' do
 end
 ```
 
-`webhook_session` - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the webhook data available as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to a order creation webhook:
+**webhook_session** - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the webhook data available as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to a order creation webhook:
 
 ```ruby
 post '/order.json' do
@@ -92,7 +93,7 @@ post '/order.json' do
 end
 ```
 
-`webhook_job` - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a 200 to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name`, `shop_token` and the webhook data as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
+**webhook_job** - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a 200 to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name`, `shop_token` and the webhook data as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
 
 ```ruby
 post '/order.json' do
@@ -108,13 +109,13 @@ class OrderWebhookJob
 end
 ```
 
-`install` - This is a private method provided with the framework that gets called when the app is authorized for the first time. You should fill this method in with anything you need to initialize on install, for example webhooks and services on shopify or any other database models you have created specific to a shop.
+**install** - This is a private method provided with the framework that gets called when the app is authorized for the first time. You should fill this method in with anything you need to initialize on install, for example webhooks and services on shopify or any other database models you have created specific to a shop.
 
-`logout` - This method clears the current session data in the app
+**logout** - This method clears the current session data in the app
 
-`current_shop` - Returns the name of the current shop (format: example.myshopify.com)
+**current_shop** - Returns the name of the current shop (format: example.myshopify.com)
 
-`base_url` - This returns the url of the app
+**base_url** - This returns the url of the app
 
 shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK. Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
