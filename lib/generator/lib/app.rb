@@ -2,6 +2,9 @@ require 'sinatra/shopify-sinatra-app'
 
 class SinatraApp < Sinatra::Base
   register Sinatra::Shopify
+
+  # set the scope that your app needs, read more here:
+  # http://docs.shopify.com/api/tutorials/oauth
   set :scope, 'read_products, read_orders'
 
   # Your App's Home page
