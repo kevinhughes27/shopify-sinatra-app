@@ -69,28 +69,28 @@ SECRET=<generate a random string to encrypt credentials with>
 Shopify::Methods
 ----------------
 
-`shopify_session` - The main method of the framework, most of your routes will use this method to acquire a valid shopify session and then perform api calls to Shopfiy. The method simply takes a block of code and makes the shop_name available to you after activating an api session. Here is an example endpoint that displays products:
+`shopify_session` - The main method of the framework, most of your routes will use this method to acquire a valid shopify session and then perform api calls to Shopfiy. The method activates a Shopify API session for you and accepts a block inside of which you can use the ShopifyAPI. Here is an example endpoint that displays products:
 
 ```ruby
 get '/products.json' do
-  shopify_session do |shop_name|
+  shopify_session do
     products = ShopifyAPI::Product.all(limit: 5)
     products.to_json
   end
 end
 ```
 
-`webhook_session` - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the shop and webhook data as a hash available (note only works for json webhooks, don't use xml). Here is an example that listens to a order creation webhook:
+`webhook_session` - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the webhook data available as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to a order creation webhook:
 
 ```ruby
 post '/order.json' do
-  webhook_session do |shop, params|
+  webhook_session do |webhook_data|
     # do something with the data
   end
 end
 ```
 
-`webhook_job` - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a 200 to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name` and the webhook data as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
+`webhook_job` - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a 200 to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name`, `shop_token` and the webhook data as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
 
 ```ruby
 post '/order.json' do
@@ -100,7 +100,7 @@ end
 class OrderWebhookJob
   @queue = :default
 
-  def self.perform(shop_name, params)
+  def self.perform(shop_name, shop_token, webhook_data)
     # do something with the data
   end
 end
@@ -110,11 +110,11 @@ end
 
 `logout` - This method clears the current session data in the app
 
-`current_shop` - Returns the name of the current shop
+`current_shop` - Returns the name of the current shop (format: example.myshopify.com)
 
 `base_url` - This returns the url of the app
 
-shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK. The following is an example of how to use a flash message in a route:
+shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK. Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
 ```
 post '/flash_message' do
@@ -137,7 +137,13 @@ Debugging ...
 
 You can set the application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to be `http://localhost:4567/` which will allow you to install your app on a live shop while running it locally.
 
-Ngrok ...
+While running the app locally you'll be able to test the install and other routes because your browser is aware of your local application but if you want to test a route that listens to a webhook this will not work because Shopify cannot talk to your local web application. You could expose your local application to the web but an easier solution is to use a tool called [Ngrok](https://ngrok.com/). Download Ngrok and run it on port 4567 (or whichever port you  are using):
+
+```
+./ngrok 4567
+```
+
+Ngrok will report what address your app is available at, leave Ngrok running and then create your webhook to point to the ngrok url plus your route e.g. `<ngrok url>/webhook_test.json`. Now trigger the webhook you are testing and it will get forwarded through ngrok to your local web application allowing you to use debuggers and repls to complete your code.
 
 When developing locally you'll need to enable unsafe javascripts in your browser for the Embedded App SDK to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started).
 

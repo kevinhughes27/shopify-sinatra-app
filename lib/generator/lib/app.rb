@@ -11,7 +11,7 @@ class SinatraApp < Sinatra::Base
   # this is a simple example that fetches some products
   # from Shopify and displays them inside your app
   get '/' do
-    shopify_session do |shop_name|
+    shopify_session do
       @products = ShopifyAPI::Product.all
       erb :home
     end
@@ -21,7 +21,7 @@ class SinatraApp < Sinatra::Base
   # and cleans up data, add to this endpoint as your app
   # stores more data.
   post '/uninstall' do
-    webhook_session do |shop, params|
+    webhook_session do |params|
       shop.destroy
     end
   end
@@ -32,7 +32,7 @@ class SinatraApp < Sinatra::Base
   # setup any webhooks or services you need on Shopify
   # inside here.
   def install
-    shopify_session do |shop_name|
+    shopify_session do
       params = YAML.load(File.read("config/app.yml"))
 
       # create an uninstall webhook, this webhook gets sent

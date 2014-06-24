@@ -48,7 +48,7 @@ module Sinatra
           api_session = ShopifyAPI::Session.new(shop_name, token)
           ShopifyAPI::Base.activate_session(api_session)
 
-          yield shop_name
+          yield
         end
       end
 
@@ -63,7 +63,7 @@ module Sinatra
           api_session = ShopifyAPI::Session.new(shop_name, shop.token)
           ShopifyAPI::Base.activate_session(api_session)
 
-          yield shop, params
+          yield params
 
           status 200
         end
@@ -73,9 +73,11 @@ module Sinatra
         return unless verify_shopify_webhook
 
         shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
+        shop = Shop.find_by(:name => shop_name)
+
         params = ActiveSupport::JSON.decode(request.body.read.to_s)
 
-        Resque.enqueue(jobKlass, shop_name, params)
+        Resque.enqueue(jobKlass, shop.name, shop.token, params)
 
         status 200
       end
