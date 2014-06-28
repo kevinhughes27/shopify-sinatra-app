@@ -28,11 +28,15 @@ module Sinatra
       end
 
       def current_shop
+        Shop.find_by(name: current_shop_name)
+      end
+
+      def current_shop_name
         session[:shopify][:shop] if session.has_key?(:shopify)
       end
 
       def current_shop_url
-        "https://#{current_shop}" if current_shop
+        "https://#{current_shop_name}" if current_shop_name
       end
 
       def shopify_session(&blk)

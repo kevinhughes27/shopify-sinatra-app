@@ -113,9 +113,15 @@ end
 
 **logout** - This method clears the current session
 
-**current_shop** - Returns the name of the current shop (format: example.myshopify.com)
+**current_shop_name** - Returns the name of the current shop (format: example.myshopify.com)
+
+**current_shop_url** - Returns the url of the current shop (format: https://example.myshopify.com)
+
+**current_shop** - Returns the activerecord model of the current shop. Use carefully!
 
 **base_url** - This returns the url of the app
+
+shopify-sinatra-app includes sinatra/activerecord for creating models that can be persisted in the database. You might want to read more about sinatra/activerecord and the methods it makes available to you: [https://github.com/janko-m/sinatra-activerecord](https://github.com/janko-m/sinatra-activerecord)
 
 shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
