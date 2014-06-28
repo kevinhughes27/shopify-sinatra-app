@@ -138,7 +138,12 @@ module Sinatra
         calculated_hmac = Base64.encode64(OpenSSL::HMAC.digest(digest, settings.shared_secret, data)).strip
         request.body.rewind
 
-        calculated_hmac == request.env['HTTP_X_SHOPIFY_HMAC_SHA256']
+        if calculated_hmac == request.env['HTTP_X_SHOPIFY_HMAC_SHA256']
+          true
+        else
+          puts "Shopify Webhook verifictation failed!"
+          false
+        end
       end
     end
 
