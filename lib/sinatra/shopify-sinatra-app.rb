@@ -32,7 +32,8 @@ module Sinatra
       end
 
       def current_shop_name
-        session[:shopify][:shop] if session.has_key?(:shopify)
+        return session[:shopify][:shop] if session.has_key?(:shopify)
+        return @shop_name if @shop_name
       end
 
       def current_shop_url
@@ -59,12 +60,12 @@ module Sinatra
       def webhook_session(&blk)
         return unless verify_shopify_webhook
 
-        shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
-        shop = Shop.find_by(:name => shop_name)
+        @shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
+        shop = Shop.find_by(:name => @shop_name)
 
         if shop.present?
           params = ActiveSupport::JSON.decode(request.body.read.to_s)
-          api_session = ShopifyAPI::Session.new(shop_name, shop.token)
+          api_session = ShopifyAPI::Session.new(shop.name, shop.token)
           ShopifyAPI::Base.activate_session(api_session)
 
           yield params
@@ -76,8 +77,8 @@ module Sinatra
       def webhook_job(jobKlass)
         return unless verify_shopify_webhook
 
-        shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
-        shop = Shop.find_by(:name => shop_name)
+        @shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
+        shop = Shop.find_by(:name => @shop_name)
 
         params = ActiveSupport::JSON.decode(request.body.read.to_s)
 

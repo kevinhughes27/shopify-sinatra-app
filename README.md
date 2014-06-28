@@ -83,7 +83,7 @@ get '/products.json' do
 end
 ```
 
-**webhook_session** - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and makes the `webhook_data` available as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
+**webhook_session** - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and yields the `webhook_data` as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
 
 ```ruby
 post '/order.json' do
