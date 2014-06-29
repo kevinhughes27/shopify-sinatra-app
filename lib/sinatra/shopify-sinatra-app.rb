@@ -49,41 +49,30 @@ module Sinatra
         else
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
-
-          api_session = ShopifyAPI::Session.new(shop_name, token)
-          ShopifyAPI::Base.activate_session(api_session)
-
+          activate_shopify_api(shop_name, token)
           yield
         end
       end
 
       def webhook_session(&blk)
         return unless verify_shopify_webhook
-
         @shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
         shop = Shop.find_by(:name => @shop_name)
 
         if shop.present?
           params = ActiveSupport::JSON.decode(request.body.read.to_s)
-          api_session = ShopifyAPI::Session.new(shop.name, shop.token)
-          ShopifyAPI::Base.activate_session(api_session)
-
+          activate_shopify_api(shop.name, shop.token)
           yield params
-
           status 200
         end
       end
 
       def webhook_job(jobKlass)
         return unless verify_shopify_webhook
-
         @shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
         shop = Shop.find_by(:name => @shop_name)
-
         params = ActiveSupport::JSON.decode(request.body.read.to_s)
-
         Resque.enqueue(jobKlass, shop.name, shop.token, params)
-
         status 200
       end
 
@@ -112,6 +101,11 @@ module Sinatra
         else
           redirect "/install"
         end
+      end
+
+      def activate_shopify_api(shop_name, token)
+        api_session = ShopifyAPI::Session.new(shop_name, token)
+        ShopifyAPI::Base.activate_session(api_session)
       end
 
       def fullpage_redirect_to(redirect_url)
@@ -162,7 +156,6 @@ module Sinatra
       app.enable :sessions
       app.enable :inline_templates
 
-      #override in app when required
       app.set :scope, 'read_products, read_orders'
 
       app.set :api_key, ENV['SHOPIFY_API_KEY']
