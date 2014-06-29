@@ -3,6 +3,7 @@ shopify-sinatra-app
 
 "A classy shopify app"
 
+shopify-sinatra-app is lightweight extension for building Shopify apps using Sinatra. It comes with the Shopify API gem for interacting with the Shopify API and uses the Shopify omniauth gem to handle authentication. The framework itself provides a handful of helper methods to make creating your app as easy as possible. The framework was designed with deployment to Heroku in mind and following the instructions below I've been able to create a new application from scratch, deploy it to Heroku and install on my live test shop in less than 5 minutes.
 
 Getting Started
 ---------------
