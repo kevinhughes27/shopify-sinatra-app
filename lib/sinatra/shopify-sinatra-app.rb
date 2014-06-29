@@ -174,7 +174,7 @@ module Sinatra
       app.use Rack::Session::Cookie, :key => '#{base_url}.session',
                                      :path => '/',
                                      :secret => app.settings.secret,
-                                     :expire_after => 2592000
+                                     :expire_after => 60*60*12 # 12 hours in seconds
 
       app.set :redis_url, ENV["REDISCLOUD_URL"] || "redis://localhost:6379/"
       redis_uri = URI.parse(app.settings.redis_url)
