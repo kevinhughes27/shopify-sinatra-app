@@ -52,6 +52,9 @@ module Sinatra
           activate_shopify_api(shop_name, token)
           yield
         end
+      rescue ActiveResource::UnauthorizedAccess
+        clear_session current_shop
+        redirect request.env["sinatra.route"].split(' ').last
       end
 
       def webhook_session(&blk)
@@ -84,7 +87,7 @@ module Sinatra
 
         return_to = request.env["sinatra.route"].split(' ').last
 
-        if shop.present?
+        if shop.present? && shop.token.present?
           session[:shopify] ||= {}
           session[:shopify][:shop] = shop.name
           session[:shopify][:token] = shop.token
@@ -106,6 +109,12 @@ module Sinatra
       def activate_shopify_api(shop_name, token)
         api_session = ShopifyAPI::Session.new(shop_name, token)
         ShopifyAPI::Base.activate_session(api_session)
+      end
+
+      def clear_session(shop)
+        logout
+        shop.token = nil
+        shop.save
       end
 
       def fullpage_redirect_to(redirect_url)
@@ -215,9 +224,13 @@ module Sinatra
         session[:shopify][:shop] = shop_name
         session[:shopify][:token] = token
 
-        if Shop.where(:name => shop_name).blank?
+        shop = Shop.find_by(name: shop_name)
+
+        if shop.nil?
           Shop.create(:name => shop_name, :token => token)
           install
+        elsif
+          shop.update_attributes(token: token)
         end
 
         return_to = env['omniauth.params']['return_to']
@@ -231,15 +244,17 @@ module Sinatra
     end
   end
 
-  class Shop < ActiveRecord::Base
+  register Shopify
+end
 
-    def self.secret
-      @secret ||= ENV['SECRET']
-    end
 
-    attr_encrypted :token, :key => secret, :attribute => 'token_encrypted'
-    validates_presence_of :name, :token
+class Shop < ActiveRecord::Base
+
+  def self.secret
+    @secret ||= ENV['SECRET']
   end
 
-  register Shopify
+  attr_encrypted :token, :key => secret, :attribute => 'token_encrypted'
+  validates_presence_of :name
+  validates_presence_of :token, on: :create
 end
