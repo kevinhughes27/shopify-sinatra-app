@@ -216,6 +216,12 @@ Note - if you are not using any background queue for processing webhooks then yo
 
 Make sure you set your shopify apps url to your Heroku app url (and make sure to use the `https` version or else the Embedded App SDK won't work) in the Shopify Partner area https://app.shopify.com/services/partners/api_clients.
 
+Apps using this framework
+-------------------------
+
+* [shopify-fulfillment-integration](https://github.com/pickle27/shopify-fulfillment-integration)
+* Add yours!
+
 Contributing
 ------------
 
