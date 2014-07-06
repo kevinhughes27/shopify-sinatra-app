@@ -1,9 +1,38 @@
-<h1>Shopify Sinatra App</h1>
+<%= bootstrap_assets %>
 
-<h2>Install This App</h2>
-<h2><small>This app requires you to login to start using it.</small></h2>
+<style>
+body {
+  background: #fff url(<%="#{base_url}/legend.gif"%>) no-repeat fixed right 130px;
+}
 
-<form action="/login" method="post">
-  <input type="url" name="shop" placeholder="Shop URL">
-  <input type="submit" value="Install App" />
-</form>
+.form-large input {
+  font-size: 18px;
+  padding: 8px;
+  height: auto;
+  line-height: normal;
+}
+
+.form-wide {
+  width: 480px;
+}
+</style>
+
+<body>
+  <div style="margin-top: 100px"></div>
+
+  <div class="container">
+    <h1>Shopify Sinatra App</h1>
+    <h2><small>This app requires you to login to start using it.</small></h2>
+  </div>
+
+  <div style="margin-top: 30px"></div>
+
+  <div class="container">
+    <form role="form" class="form-large" action="/login" method="post">
+        <div class="input-append">
+          <input class="form-control form-wide" type="url" name="shop" placeholder="Shop URL">
+          <input class="btn" type="submit" value="Install App" />
+        </div>
+    </form>
+  </div>
+</body>
