@@ -24,6 +24,7 @@ end
 group :development do
   gem 'sqlite3'
   gem 'rack-test'
+  gem 'minitest'
   gem 'fakeweb'
   gem 'mocha', require: false
   gem 'byebug'
