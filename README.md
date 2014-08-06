@@ -240,3 +240,5 @@ Contributing
 ------------
 
 PRs welcome!
+
+Note - this framework does have tests! They are the same tests that get generated for new apps by the generator. You can run them with `./test.sh`
