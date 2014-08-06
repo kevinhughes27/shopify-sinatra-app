@@ -53,6 +53,7 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 `views/*` --> The other views used by the app. You'll probably make a lot of changes to home.erb and install.erb to customize the experience for your app
 
+`test/*` --> Test files, fixtures and helpers for testing your app.
 
 ### Setting the app to use your Shopify API credentials
 
@@ -159,6 +160,19 @@ While running the app locally you'll be able to test the install and other route
 
 Ngrok will report what address your app is available at, leave Ngrok running and then create your webhook to point to the ngrok url plus your route e.g. `<ngrok url>/webhook_test.json`. Now trigger the webhook you are testing and it will get forwarded through ngrok to your local web application allowing you to use debuggers and repls to complete your code.
 
+Testing
+-------
+
+Some basic tests are included in the generated app. To run them simply run:
+
+```
+bundle exec rake test:prepare
+bundle exec rake test
+```
+
+`test:prepare` will initialize your testing database using the `seeds.rb` file. If you have added additional models you can add them here.
+
+Checkout the contents of the `app_test.rb` file and the `test_helper.rb` and modify them as you add functionality to your app. You can also check the tests of other apps using this framework to see more about how to write tests for your own app.
 
 Deploying
 ---------

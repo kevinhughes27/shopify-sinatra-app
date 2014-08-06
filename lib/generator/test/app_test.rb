@@ -1,8 +1,6 @@
 require "test_helper"
 require "./lib/app"
 
-require 'byebug'
-
 class AppTest < Minitest::Test
 
   def app
