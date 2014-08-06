@@ -219,7 +219,7 @@ Make sure you set your shopify apps url to your Heroku app url (and make sure to
 Apps using this framework
 -------------------------
 
-* [shopify-fulfillment-integration](https://github.com/pickle27/shopify-fulfillment-integration)
+* [shopify-fulfillment-integration](https://github.com/Shopify/shopify-fulfillment-integration)
 * Add yours!
 
 Contributing
