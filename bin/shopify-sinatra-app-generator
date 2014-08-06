@@ -26,6 +26,7 @@ else
     FileUtils.cp_r(generator_dir + "/lib",        app_dir + "/lib")
     FileUtils.cp_r(generator_dir + "/public",     app_dir + "/public")
     FileUtils.cp_r(generator_dir + "/views",      app_dir + "/views")
+    FileUtils.cp_r(generator_dir + "/test",       app_dir + "/test")
 
     FileUtils.cp(generator_dir   + "/.gitignore", app_dir + "/.gitignore")
     FileUtils.cp(generator_dir   + "/config.ru",  app_dir + "/config.ru")
