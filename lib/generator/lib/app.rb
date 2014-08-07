@@ -13,6 +13,7 @@ class SinatraApp < Sinatra::Base
   get '/' do
     shopify_session do
       @products = ShopifyAPI::Product.find(:all, :params => {:limit => 10})
+      erb :home
     end
   end
 
