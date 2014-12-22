@@ -234,7 +234,7 @@ Apps using this framework
 -------------------------
 
 * [shopify-fulfillment-integration](https://github.com/Shopify/shopify-fulfillment-integration)
-* [shopify_tax_receipts](https://github.com/pickle27/shopify_tax_receipts)
+* [shopify-tax-receipts](https://github.com/pickle27/shopify-tax-receipts)
 * Add yours!
 
 Contributing
