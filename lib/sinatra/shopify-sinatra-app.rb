@@ -189,7 +189,9 @@ module Sinatra
         provider :shopify,
                  app.settings.api_key,
                  app.settings.shared_secret,
+
                  scope: app.settings.scope,
+
                  setup: lambda { |env|
                    params = Rack::Utils.parse_query(env['QUERY_STRING'])
                    site_url = "https://#{params['shop']}"
