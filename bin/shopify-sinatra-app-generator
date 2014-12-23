@@ -3,17 +3,17 @@ require 'fileutils'
 
 working_dir = Dir.pwd
 
-spec = Gem::Specification.find_by_name("shopify-sinatra-app")
+spec = Gem::Specification.find_by_name('shopify-sinatra-app')
 gem_root = spec.gem_dir
-gem_lib = gem_root + "/lib"
+gem_lib = gem_root + '/lib'
 
-generator_dir = gem_lib + "/generator"
+generator_dir = gem_lib + '/generator'
 
 if ARGV.length < 2
   puts "Usage:\n./shopify-sinatra-app new <app_name>"
 else
   app_name = ARGV[1]
-  app_dir = working_dir + "/" + app_name
+  app_dir = working_dir + '/' + app_name
 
   puts "Generating new app: #{app_name}"
   puts "fullpath: #{app_dir}"
@@ -21,22 +21,22 @@ else
   begin
     Dir.mkdir(app_dir)
 
-    FileUtils.cp_r(generator_dir + "/config",     app_dir + "/config")
-    FileUtils.cp_r(generator_dir + "/db",         app_dir + "/db")
-    FileUtils.cp_r(generator_dir + "/lib",        app_dir + "/lib")
-    FileUtils.cp_r(generator_dir + "/public",     app_dir + "/public")
-    FileUtils.cp_r(generator_dir + "/views",      app_dir + "/views")
-    FileUtils.cp_r(generator_dir + "/test",       app_dir + "/test")
+    FileUtils.cp_r(generator_dir + '/config',     app_dir + '/config')
+    FileUtils.cp_r(generator_dir + '/db',         app_dir + '/db')
+    FileUtils.cp_r(generator_dir + '/lib',        app_dir + '/lib')
+    FileUtils.cp_r(generator_dir + '/public',     app_dir + '/public')
+    FileUtils.cp_r(generator_dir + '/views',      app_dir + '/views')
+    FileUtils.cp_r(generator_dir + '/test',       app_dir + '/test')
 
-    FileUtils.cp(generator_dir   + "/.gitignore", app_dir + "/.gitignore")
-    FileUtils.cp(generator_dir   + "/config.ru",  app_dir + "/config.ru")
-    FileUtils.cp(generator_dir   + "/Procfile",   app_dir + "/Procfile")
-    FileUtils.cp(generator_dir   + "/Rakefile",   app_dir + "/Rakefile")
-    FileUtils.cp(generator_dir   + "/Gemfile",    app_dir + "/Gemfile")
-    FileUtils.cp(generator_dir   + "/README.md",  app_dir + "/README.md")
+    FileUtils.cp(generator_dir   + '/.gitignore', app_dir + '/.gitignore')
+    FileUtils.cp(generator_dir   + '/config.ru',  app_dir + '/config.ru')
+    FileUtils.cp(generator_dir   + '/Procfile',   app_dir + '/Procfile')
+    FileUtils.cp(generator_dir   + '/Rakefile',   app_dir + '/Rakefile')
+    FileUtils.cp(generator_dir   + '/Gemfile',    app_dir + '/Gemfile')
+    FileUtils.cp(generator_dir   + '/README.md',  app_dir + '/README.md')
 
-    FileUtils.touch(app_dir + "/.env")
-    file = File.open(app_dir + "/.env", "w")
+    FileUtils.touch(app_dir + '/.env')
+    file = File.open(app_dir + '/.env', 'w')
     file.write("SHOPIFY_API_KEY=your_api_key\n")
     file.write("SHOPIFY_SHARED_SECRET=your_shared_secret\n")
     file.write("SECRET=random_string_to_encrypt_credentials_with\n")
@@ -44,17 +44,17 @@ else
 
     Dir.chdir(app_dir)
 
-    pipe = IO.popen("bundle install")
+    pipe = IO.popen('bundle install')
     while (line = pipe.gets)
       print line
     end
 
-    pipe = IO.popen("bundle exec rake db:migrate")
+    pipe = IO.popen('bundle exec rake db:migrate')
     while (line = pipe.gets)
       print line
     end
 
   rescue Errno::EEXIST => e
-    puts "App directory alread exists, pick a new app name or delete the existing folder"
+    puts 'App directory alread exists, pick a new app name or delete the existing folder'
   end
 end

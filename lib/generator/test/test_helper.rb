@@ -15,12 +15,12 @@ module Helpers
     File.read("./test/fixtures/#{name}")
   end
 
-  def fake(url, options={})
+  def fake(url, options = {})
     method = options.delete(:method) || :get
     body = options.delete(:body) || '{}'
     format = options.delete(:format) || :json
 
-    FakeWeb.register_uri(method, url, {:body => body, :status => 200, :content_type => "application/#{format}"}.merge(options))
+    FakeWeb.register_uri(method, url, { body: body, status: 200, content_type: "application/#{format}" }.merge(options))
   end
 end
 
