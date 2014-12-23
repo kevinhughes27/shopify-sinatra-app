@@ -12,7 +12,7 @@ class SinatraApp < Sinatra::Base
   # from Shopify and displays them inside your app
   get '/' do
     shopify_session do
-      @products = ShopifyAPI::Product.find(:all, :params => {:limit => 10})
+      @products = ShopifyAPI::Product.find(:all, params: { limit: 10 })
       erb :home
     end
   end
@@ -37,15 +37,14 @@ class SinatraApp < Sinatra::Base
       # when your app is uninstalled from a shop. It is good
       # practice to clean up any data from a shop when they
       # uninstall your app.
-      uninstall_webhook = ShopifyAPI::Webhook.new({
-        topic: "app/uninstalled",
+      uninstall_webhook = ShopifyAPI::Webhook.new(
+        topic: 'app/uninstalled',
         address: "#{base_url}/uninstall",
-        format: "json"
-      })
+        format: 'json'
+      )
       uninstall_webhook.save
     end
 
     redirect '/'
   end
-
 end

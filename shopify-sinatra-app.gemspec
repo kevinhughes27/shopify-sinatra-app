@@ -2,12 +2,12 @@ Gem::Specification.new do |s|
   s.name = 'shopify-sinatra-app'
   s.version = '0.1.3'
 
-  s.summary     = "A classy shopify app"
-  s.description = "A Sinatra extension for building Shopify Apps. Akin to the shopify_app gem but for Sinatra"
+  s.summary     = 'A classy shopify app'
+  s.description = 'A Sinatra extension for building Shopify Apps. Akin to the shopify_app gem but for Sinatra'
 
-  s.authors = ["Kevin Hughes"]
-  s.email = "kevin.hughes@shopify.com"
-  s.homepage = "https://github.com/pickle27/shopify-sinatra-app/"
+  s.authors = ['Kevin Hughes']
+  s.email = 'kevin.hughes@shopify.com'
+  s.homepage = 'https://github.com/pickle27/shopify-sinatra-app/'
   s.license = 'MIT'
 
   s.files = `git ls-files`.split("\n")
