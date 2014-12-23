@@ -28,4 +28,5 @@ group :development do
   gem 'fakeweb'
   gem 'mocha', require: false
   gem 'byebug'
+  gem 'dotenv'
 end
