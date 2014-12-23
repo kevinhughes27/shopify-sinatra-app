@@ -20,7 +20,7 @@ class AppTest < Minitest::Test
   def test_root_with_session_activates_api
     set_session
     SinatraApp.any_instance.expects(:activate_shopify_api).with(@shop_name, 'token')
-    ShopifyAPI::Product.expects(:find).returns('{}')
+    ShopifyAPI::Product.expects(:find).returns([])
     get '/'
     assert last_response.ok?
   end
