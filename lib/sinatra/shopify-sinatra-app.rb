@@ -41,10 +41,10 @@ module Sinatra
 
       def shopify_session(&blk)
         if !session.key?(:shopify)
-          get_session
+          authenticate
         elsif params[:shop].present? && session[:shopify][:shop] != sanitize_shop_param(params)
           logout
-          get_session
+          authenticate
         else
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
@@ -79,22 +79,6 @@ module Sinatra
       end
 
       private
-
-      def get_session
-        shop_name = sanitize_shop_param(params)
-        shop = Shop.find_by(name: shop_name)
-
-        return_to = request.env['sinatra.route'].split(' ').last
-
-        if shop.present? && shop.token.present?
-          session[:shopify] ||= {}
-          session[:shopify][:shop] = shop.name
-          session[:shopify][:token] = shop.token
-          redirect return_to
-        else
-          authenticate(return_to)
-        end
-      end
 
       def authenticate(return_to = '/')
         if shop_name = sanitize_shop_param(params)
@@ -221,19 +205,13 @@ module Sinatra
         shop_name = params['shop']
         token = request.env['omniauth.auth']['credentials']['token']
 
-        session[:shopify] ||= {}
-        session[:shopify][:shop] = shop_name
-        session[:shopify][:token] = token
+        shop = Shop.find_or_initialize_by(name: shop_name)
+        shop.token = token
+        shop.save!
 
-        shop = Shop.find_by(name: shop_name)
+        #install
 
-        if shop.nil?
-          Shop.create(name: shop_name, token: token)
-          install
-        elsif
-          shop.update_attributes(token: token)
-        end
-
+        session[:shopify] = {shop: shop_name, token: token}
         return_to = env['omniauth.params']['return_to']
         redirect return_to
       end
