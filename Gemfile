@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.0.0'
+ruby '2.1.5'
 
 gem 'sinatra'
 gem 'sinatra-redis'
@@ -13,8 +13,8 @@ gem 'rake'
 
 gem 'resque', '~> 1.22.0'
 
-gem 'omniauth-shopify-oauth2'
-gem 'shopify_api'
+gem 'omniauth-shopify-oauth2', '~> 1.1.8'
+gem 'shopify_api', '~> 4.0.2'
 
 group :production do
   gem 'pg'
