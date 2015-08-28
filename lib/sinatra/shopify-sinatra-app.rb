@@ -23,7 +23,7 @@ module Sinatra
       end
 
       def base_url
-        @base_url ||= "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}"
+        @base_url ||= "https://#{request.env['HTTP_HOST']}"
       end
 
       def current_shop
