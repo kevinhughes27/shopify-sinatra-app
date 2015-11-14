@@ -3,6 +3,9 @@ development:
   database: db/shopify_app.sqlite3
   pool: 5
 
+production:
+  url: <%= ENV['DATABASE_URL'] %>
+  
 test:
   adapter: sqlite3
   database: "db/test.sqlite3"
