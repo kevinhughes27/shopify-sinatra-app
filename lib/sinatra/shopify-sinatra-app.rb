@@ -169,6 +169,7 @@ module Sinatra
       app.set :api_key, ENV['SHOPIFY_API_KEY']
       app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
       app.set :secret, ENV['SECRET']
+      app.set :hostname, ENV['HOSTNAME']
 
       app.use Rack::Flash, sweep: true
       app.use Rack::MethodOverride
@@ -190,8 +191,8 @@ module Sinatra
                  app.settings.api_key,
                  app.settings.shared_secret,
                  #Fixes for new Shopify callback issues
-                 redirect_uri: base_url + "/auth/shopify/callback",
-                 callback_url: base_url + "/auth/shopify/callback",
+                 redirect_uri: app.settings.hostname + "/auth/shopify/callback",
+                 callback_url: app.settings.hostname + "/auth/shopify/callback",
                  scope: app.settings.scope,
 
                  setup: lambda { |env|
