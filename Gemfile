@@ -13,7 +13,7 @@ gem 'rake'
 
 gem 'resque', '~> 1.22.0'
 
-gem 'omniauth-shopify-oauth2', '~> 1.1.8'
+gem 'omniauth-shopify-oauth2', '~> 1.1.11'
 gem 'shopify_api', '~> 4.0.2'
 
 group :production do

@@ -190,9 +190,8 @@ module Sinatra
         provider :shopify,
                  app.settings.api_key,
                  app.settings.shared_secret,
-                 #Fixes for new Shopify callback issues
                  redirect_uri: app.settings.hostname + "/auth/shopify/callback",
-                 callback_url: app.settings.hostname + "/auth/shopify/callback",
+
                  scope: app.settings.scope,
 
                  setup: lambda { |env|
