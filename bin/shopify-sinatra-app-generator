@@ -17,21 +17,18 @@ class Generator
   end
 
   def run
-    new_app
+    if Dir.exists? app_dir
+      log 'App directory alread exists, pick a new app name or delete the existing folder'
+      return
+    end
+
     copy_example_app
     create_dot_env
     bundle_install
     migrate_database
-
-  rescue Errno::EEXIST => e
-    log 'App directory alread exists, pick a new app name or delete the existing folder'
   end
 
   private
-
-  def new_app
-    Dir.mkdir(app_dir)
-  end
 
   def copy_example_app
     FileUtils.cp_r(example_dir, app_dir)

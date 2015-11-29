@@ -1,5 +1,6 @@
-0.2.6
+0.2.0
 -----
+* add versions to gemfile
 * refactored the generator
 * Changed install method to after_shopify_auth. Implementations of this method must now be idempotent as this will be called anytime the app is auth'd which may be due to just a lost session and not necessarily an install.
 * Always redo the full auth rather than trying to keep track of first time install state vs re-auth
