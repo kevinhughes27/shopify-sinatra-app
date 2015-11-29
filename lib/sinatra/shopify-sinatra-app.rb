@@ -46,8 +46,8 @@ module Sinatra
         if !session.key?(:shopify)
           authenticate(return_to)
         elsif params[:shop].present? && session[:shopify][:shop] != sanitize_shop_param(params)
-          logout
-          authenticate(return_to)
+          logout(return_to)
+          authenticate
         else
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
@@ -212,9 +212,13 @@ module Sinatra
         shop.token = token
         shop.save!
 
+        session[:shopify] = {
+          shop: shop_name,
+          token: token
+        }
+
         after_shopify_auth()
 
-        session[:shopify] = {shop: shop_name, token: token}
         return_to = env['omniauth.params']['return_to']
         redirect return_to
       end
