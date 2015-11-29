@@ -46,8 +46,8 @@ module Sinatra
         if !session.key?(:shopify)
           authenticate(return_to)
         elsif params[:shop].present? && session[:shopify][:shop] != sanitize_shop_param(params)
-          logout(return_to)
-          authenticate
+          logout
+          authenticate(return_to)
         else
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
