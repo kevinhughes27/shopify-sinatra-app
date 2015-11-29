@@ -67,6 +67,7 @@ After creating your new application you need to edit the `.env` file and add the
 SHOPIFY_API_KEY=<your api key>
 SHOPIFY_SHARED_SECRET=<your shared secret>
 SECRET=<generate a random string to encrypt credentials with>
+HOSTNAME=<your apps url>
 ```
 
 If your app has any other secret credentials you should add them to this file.
