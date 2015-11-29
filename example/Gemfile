@@ -22,4 +22,6 @@ end
 
 group :test do
   gem 'mocha', require: false
+  gem 'rack-test'
+  gem 'fakeweb'
 end
