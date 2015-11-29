@@ -122,6 +122,7 @@ DEPENDENCIES
   activesupport
   attr_encrypted
   byebug
+  dotenv
   fakeweb
   foreman
   minitest

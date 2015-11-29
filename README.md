@@ -111,7 +111,7 @@ class OrderWebhookJob
 end
 ```
 
-**install** - This is a private method provided with the framework that gets called when the app is authorized for the first time. You should fill this method in with anything you need to initialize on install, for example webhooks and services on Shopify or any other database models you have created specific to a shop.
+**after_shopify_auth** - This is a private method provided with the framework that gets called whenever the app is authorized. You should fill this method in with anything you need to initialize, for example webhooks and services on Shopify or any other database models you have created specific to a shop. Note that this method will be called anytime the auth flow is completed so this method should be idempotent (running it twice has the same effect as running it once).
 
 **logout** - This method clears the current session
 
@@ -125,7 +125,7 @@ end
 
 shopify-sinatra-app includes sinatra/activerecord for creating models that can be persisted in the database. You might want to read more about sinatra/activerecord and the methods it makes available to you: [https://github.com/janko-m/sinatra-activerecord](https://github.com/janko-m/sinatra-activerecord)
 
-shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
+shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signaling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
 ```
 post '/flash_message' do
@@ -158,7 +158,7 @@ While running the app locally you'll be able to test the install and other route
 ./ngrok 4567
 ```
 
-Ngrok will report what address your app is available at, leave Ngrok running and then create your webhook to point to the ngrok url plus your route e.g. `<ngrok url>/webhook_test.json`. Now trigger the webhook you are testing and it will get forwarded through ngrok to your local web application allowing you to use debuggers and repls to complete your code.
+Ngrok will report what address your app is available at, leave Ngrok running and then create your webhook to point to the ngrok url plus your route e.g. `<ngrok url>/webhook_test.json`. Now trigger the webhook you are testing and it will get forwarded through ngrok to your local web application allowing you to use debuggers and REPLs to complete your code.
 
 Testing
 -------
