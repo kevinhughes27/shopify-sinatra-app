@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd lib/generator/test
+cd example/test
 
 bundle install
 bundle exec rake test:prepare
