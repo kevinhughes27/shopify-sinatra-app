@@ -1,17 +1,7 @@
 <script type="text/javascript">
-
   ShopifyApp.ready(function(){
     ShopifyApp.Bar.initialize({
       icon: '<%= "#{base_url}/icon.png" %>'
     });
-
-    <% if flash[:notice] %>
-      ShopifyApp.flashNotice("<%= flash[:notice] %>");
-    <% end %>
-
-    <% if flash[:error] %>
-      ShopifyApp.flashError("<%= flash[:error] %>");
-    <% end %>
-
   });
 </script>
