@@ -40,11 +40,13 @@ module Sinatra
       end
 
       def shopify_session(&blk)
+        return_to = request.env['sinatra.route'].split(' ').last
+
         if !session.key?(:shopify)
-          authenticate
+          authenticate(return_to)
         elsif params[:shop].present? && session[:shopify][:shop] != sanitize_shop_param(params)
           logout
-          authenticate
+          authenticate(return_to)
         else
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
