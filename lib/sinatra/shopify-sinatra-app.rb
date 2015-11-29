@@ -24,7 +24,7 @@ module Sinatra
       end
 
       def base_url
-        @base_url ||= "https://#{request.env['HTTP_HOST']}"
+        @base_url ||= "#{request_protocol}://#{request.env['HTTP_HOST']}"
       end
 
       def current_shop
@@ -82,6 +82,10 @@ module Sinatra
       end
 
       private
+
+      def request_protocol
+        request.secure? ? 'https' : 'http'
+      end
 
       def authenticate(return_to = '/')
         if shop_name = sanitize_shop_param(params)
