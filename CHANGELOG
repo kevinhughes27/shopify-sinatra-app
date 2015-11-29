@@ -1,0 +1,3 @@
+0.1.6
+-----
+* Changed install method to after_shopify_auth. Implementations of this method must now be idempotent as this will be called anytime the app is auth'd which may be due to just a lost session and not necessarily an install.

@@ -14,8 +14,9 @@ require 'omniauth-shopify-oauth2'
 module Sinatra
   module Shopify
     module Methods
-      def install
-        fail NotImplementedError
+
+      # designed to be overriden
+      def after_shopify_auth
       end
 
       def logout
@@ -211,7 +212,7 @@ module Sinatra
         shop.token = token
         shop.save!
 
-        #install
+        after_shopify_auth()
 
         session[:shopify] = {shop: shop_name, token: token}
         return_to = env['omniauth.params']['return_to']

@@ -31,7 +31,7 @@ class SinatraApp < Sinatra::Base
   # This method gets called when your app is installed.
   # setup any webhooks or services you need on Shopify
   # inside here.
-  def install
+  def after_shopify_auth
     shopify_session do
       # create an uninstall webhook, this webhook gets sent
       # when your app is uninstalled from a shop. It is good
@@ -42,7 +42,11 @@ class SinatraApp < Sinatra::Base
         address: "#{base_url}/uninstall",
         format: 'json'
       )
-      uninstall_webhook.save
+      begin
+        uninstall_webhook.save!
+      rescue => e
+        raise unless uninstall_webhook.persisted?
+      end
     end
 
     redirect '/'
