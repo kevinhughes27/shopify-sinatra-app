@@ -2,10 +2,10 @@
 require 'fileutils'
 
 class Generator
-  attr_reader :app_dir, :example_dir
+  attr_reader :spec, :app_dir, :example_dir
 
   def initialize(app_name)
-    spec = Gem::Specification.find_by_name('shopify-sinatra-app')
+    @spec = Gem::Specification.find_by_name('shopify-sinatra-app')
     gem_root = spec.gem_dir
     @example_dir = gem_root + '/example'
 
@@ -24,6 +24,7 @@ class Generator
 
     copy_example_app
     create_dot_env
+    sub_latest_version
     bundle_install
     migrate_database
   end
@@ -42,6 +43,13 @@ class Generator
     file.write("SECRET=random_string_to_encrypt_credentials_with\n")
     file.write("HOSTNAME=your_heroku_url\n")
     file.close
+  end
+
+  def sub_latest_version
+    file_name = "#{app_dir}/Gemfile"
+    text = File.read(file_name)
+    new_contents = text.gsub("gem 'shopify-sinatra-app', path: '../'", "gem 'shopify-sinatra-app', '~> #{spec.version}'")
+    File.open(file_name, "w") {|file| file.puts new_contents }
   end
 
   def bundle_install
