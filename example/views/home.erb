@@ -2,14 +2,8 @@
 <p>Welcome!</p>
 
 <h3>Products</h3>
-<table class="table table-striped table-hover">
-  <tbody>
-    <% @products.each do |product| %>
-      <tr>
-        <td>
-          <a href=<%="#{current_shop_url}/admin/products/#{product.id}"%> target="_blank"> <%= product.id %> </a>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<ul>
+  <% @products.each do |product| %>
+    <li><a href=<%="#{current_shop_url}/admin/products/#{product.id}"%> target="_blank"> <%= product.id %> </a></li>
+  <% end %>
+</ul>
