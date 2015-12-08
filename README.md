@@ -1,4 +1,4 @@
-shopify-sinatra-app
+shopify-sinatra-app [![Build Status](https://travis-ci.org/kevinhughes27/shopify-tax-receipts.svg)](https://travis-ci.org/kevinhughes27/shopify-sinatra-app)
 ===================
 
 "A classy shopify app"
