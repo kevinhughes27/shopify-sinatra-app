@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 ruby "2.1.5"
 
-gem 'shopify-sinatra-app', path: '../'
+gem 'shopify-sinatra-app', github: 'kevinhughes27/shopify-sinatra-app'
+gem 'sinatra-activerecord'
 gem 'sinatra-twitter-bootstrap', require: 'sinatra/twitter-bootstrap'
 gem 'rack-flash3', require: 'rack-flash'
 

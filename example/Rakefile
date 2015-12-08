@@ -1,5 +1,4 @@
 require 'sinatra/activerecord/rake'
-require 'resque/tasks'
 require 'rake/testtask'
 require './lib/app'
 

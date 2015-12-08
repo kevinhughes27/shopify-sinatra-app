@@ -48,7 +48,7 @@ class Generator
   def sub_latest_version
     file_name = "#{app_dir}/Gemfile"
     text = File.read(file_name)
-    new_contents = text.gsub("gem 'shopify-sinatra-app', path: '../'", "gem 'shopify-sinatra-app', '~> #{spec.version}'")
+    new_contents = text.gsub("gem 'shopify-sinatra-app', github: 'kevinhughes27/shopify-sinatra-app'", "gem 'shopify-sinatra-app', '~> #{spec.version}'")
     File.open(file_name, "w") {|file| file.puts new_contents }
   end
 
