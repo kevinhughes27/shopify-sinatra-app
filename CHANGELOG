@@ -1,5 +1,6 @@
 0.2.0
 -----
+* added a SHOPIFY_REDIRECT_URI env param for setting the redirect_uri (was breifly HOSTNAME)
 * add versions to gemfile
 * refactored the generator
 * Changed install method to after_shopify_auth. Implementations of this method must now be idempotent as this will be called anytime the app is auth'd which may be due to just a lost session and not necessarily an install.

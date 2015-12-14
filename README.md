@@ -57,7 +57,7 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 ### Setting the app to use your Shopify API credentials
 
-You'll need to create a Shopify Partner Account and a new application. You can make an account [here](http://www.shopify.ca/partners) and see this [tutorial](http://docs.shopify.com/api/the-basics/getting-started) for creating a new application.
+You'll need to create a Shopify Partner Account and a new application. You can make an account [here](http://www.shopify.ca/partners) and see this [tutorial](http://docs.shopify.com/api/the-basics/getting-started) for creating a new application. This app uses the default redirect_uri from omniauth `<your domain>/auth/shopify/callback` so set it accordingly when creating your app.
 
 Note - The shopify-sinatra-app creates an embedded app! You need change the embedded setting to `enabled` in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) for your app. If you don't want your app to be embedded then remove the related code in `layout/application.erb` and delete the `layout/_top_bar.erb` file and the references to it in the other views.
 
@@ -66,8 +66,8 @@ After creating your new application you need to edit the `.env` file and add the
 ```
 SHOPIFY_API_KEY=<your api key>
 SHOPIFY_SHARED_SECRET=<your shared secret>
+SHOPIFY_REDIRECT_URI="<your redirect_uri>"
 SECRET=<generate a random string to encrypt credentials with>
-HOSTNAME=<your apps url>
 ```
 
 If your app has any other secret credentials you should add them to this file.
