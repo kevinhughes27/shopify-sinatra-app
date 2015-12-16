@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd example
+pwd
 
 bundle install
 bundle exec rake db:migrate
