@@ -3,7 +3,6 @@ language: ruby
 rvm:
   - 2.1.5
 
-gemfile:
-  - Gemfile
+install: true
 
 script: "./test.sh"
