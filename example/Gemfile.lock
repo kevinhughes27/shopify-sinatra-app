@@ -1,20 +1,3 @@
-GIT
-  remote: git://github.com/kevinhughes27/shopify-sinatra-app.git
-  revision: 81764c6757a6dc3c95c3e34b89cf84957c192922
-  branch: master
-  specs:
-    shopify-sinatra-app (0.2.0)
-      activesupport (~> 4.1.1)
-      attr_encrypted (~> 1.3.2)
-      omniauth-shopify-oauth2 (~> 1.1.11)
-      rack-flash3 (~> 1.0.5)
-      resque (~> 1.25.2)
-      shopify_api (~> 4.0.2)
-      sinatra (~> 1.4.6)
-      sinatra-activerecord (~> 2.0.9)
-      sinatra-redis (~> 0.3.0)
-      sinatra-twitter-bootstrap (~> 2.3.3)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -93,6 +76,17 @@ GEM
       redis-namespace (~> 1.3)
       sinatra (>= 0.9.2)
       vegas (~> 0.1.2)
+    shopify-sinatra-app (0.2.0)
+      activesupport (~> 4.1.1)
+      attr_encrypted (~> 1.3.2)
+      omniauth-shopify-oauth2 (~> 1.1.11)
+      rack-flash3 (~> 1.0.5)
+      resque (~> 1.25.2)
+      shopify_api (~> 4.0.2)
+      sinatra (~> 1.4.6)
+      sinatra-activerecord (~> 2.0.9)
+      sinatra-redis (~> 0.3.0)
+      sinatra-twitter-bootstrap (~> 2.3.3)
     shopify_api (4.0.7)
       activeresource
       rack
@@ -130,7 +124,7 @@ DEPENDENCIES
   rack-flash3
   rack-test
   rake
-  shopify-sinatra-app!
+  shopify-sinatra-app (~> 0.2.0)
   sinatra-activerecord
   sinatra-twitter-bootstrap
   sqlite3
