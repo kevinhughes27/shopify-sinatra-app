@@ -1,7 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/redis'
 require 'sinatra/activerecord'
-require 'sinatra/twitter-bootstrap'
 
 require 'resque'
 require 'rack-flash'
@@ -144,7 +143,6 @@ module Sinatra
     def self.registered(app)
       app.helpers Shopify::Methods
       app.register Sinatra::ActiveRecordExtension
-      app.register Sinatra::Twitter::Bootstrap::Assets
 
       app.set :database_file, File.expand_path('config/database.yml')
       app.set :views, File.expand_path('views')

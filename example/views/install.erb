@@ -1,20 +1,20 @@
-<%= bootstrap_assets %>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
 
 <style>
-body {
-  background: #fff url(<%="#{base_url}/legend.gif"%>) no-repeat fixed right 130px;
-}
+  body {
+    background: #fff url(<%="#{base_url}/legend.gif"%>) no-repeat fixed right 130px;
+  }
 
-.form-large input {
-  font-size: 18px;
-  padding: 8px;
-  height: auto;
-  line-height: normal;
-}
+  .form-large input {
+    font-size: 18px;
+    padding: 8px;
+    height: auto;
+    line-height: normal;
+  }
 
-.form-wide {
-  width: 480px;
-}
+  .form-wide {
+    width: 480px;
+  }
 </style>
 
 <body>
@@ -29,9 +29,11 @@ body {
 
   <div class="container">
     <form role="form" class="form-large" action="/login" method="post">
-        <div class="input-append">
-          <input class="form-control form-wide" type="url" name="shop" placeholder="Shop URL">
-          <input class="btn" type="submit" value="Install App" />
+        <div class="input-group form-wide">
+          <input class="form-control" type="url" name="shop" placeholder="Shop URL">
+          <span class="input-group-btn">
+            <input class="btn" type="submit" value="Install App" />
+          </span>
         </div>
     </form>
   </div>
