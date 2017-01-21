@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
-ruby "2.2.2"
+ruby '2.3.1'
 
-gem 'shopify-sinatra-app', '~> 0.3.0'
+gem 'shopify-sinatra-app', path: '../'
 gem 'sinatra-activerecord'
 gem 'rack-flash3', require: 'rack-flash'
 

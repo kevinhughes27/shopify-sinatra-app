@@ -5,6 +5,7 @@ shopify-sinatra-app [![Build Status](https://travis-ci.org/kevinhughes27/shopify
 
 shopify-sinatra-app is lightweight extension for building Shopify apps using Sinatra. It comes with the Shopify API gem for interacting with the Shopify API and uses the Shopify omniauth gem to handle authentication via Oauth (other auth methods are not supported). The framework itself provides a handful of helper methods to make creating your app as easy as possible. The framework was designed with deployment to Heroku in mind and following the instructions below I've been able to create a new application from scratch, deploy it to Heroku and install on my live test shop in less than 5 minutes.
 
+
 Getting Started
 ---------------
 
@@ -66,11 +67,11 @@ After creating your new application you need to edit the `.env` file and add the
 ```
 SHOPIFY_API_KEY=<your api key>
 SHOPIFY_SHARED_SECRET=<your shared secret>
-SHOPIFY_REDIRECT_URI="<your redirect_uri>"
 SECRET=<generate a random string to encrypt credentials with>
 ```
 
 If your app has any other secret credentials you should add them to this file.
+
 
 Shopify::Methods
 ----------------
@@ -137,11 +138,10 @@ end
 
 note - a flash must be followed by a redirect or it won't work!
 
+
 Developing
 ----------
-You can set the application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to be `http://localhost:4567/` which will allow you to install your app on a live shop while running it locally.
-
-When developing locally you'll need to enable unsafe javascripts in your browser for the Embedded App SDK to function. Read more [here](http://docs.shopify.com/embedded-app-sdk/getting-started).
+The embedded app sdk won't load non https content so you'll need to use a forwarding service like [ngrok](https://ngrok.com/) or [forwardhq](https://forwardhq.com/). Set your application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to your forwarded url. However The redirect_uri should still be `http://localhost:4567/auth/shopify/callback` which will allow you to install your app on a live shop while running it locally.
 
 To run the app locally we use `foreman` which comes with the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart). Foreman handles running our application and setting our credentials as environment variables. To run the application type:
 
@@ -153,13 +153,8 @@ Note - we use `foreman run ...` not `foreman start ...` because we only want to 
 
 To debug your app simply add `require 'byebug'` at the top and then type `byebug` where you would like to drop into an interactive session. You may also want to try out [Pry](http://pryrepl.org/).
 
-While running the app locally you'll be able to test the install and other routes because your browser is aware of your local application but if you want to test a route that listens to a webhook this will not work because Shopify cannot talk to your local web application. You could expose your local application to the web but an easier solution is to use a tool called [Ngrok](https://ngrok.com/). Download Ngrok and run it on port 4567 (or whichever port you  are using):
+If you are testing webhooks locally make sure they also go through the forwarded url and not `localhost`.
 
-```
-./ngrok 4567
-```
-
-Ngrok will report what address your app is available at, leave Ngrok running and then create your webhook to point to the ngrok url plus your route e.g. `<ngrok url>/webhook_test.json`. Now trigger the webhook you are testing and it will get forwarded through ngrok to your local web application allowing you to use debuggers and REPLs to complete your code.
 
 Testing
 -------
@@ -174,6 +169,7 @@ bundle exec rake test
 `test:prepare` will initialize your testing database using the `seeds.rb` file. If you have added additional models you can add them here.
 
 Checkout the contents of the `app_test.rb` file and the `test_helper.rb` and modify them as you add functionality to your app. You can also check the tests of other apps using this framework to see more about how to write tests for your own app.
+
 
 Deploying
 ---------
@@ -231,12 +227,14 @@ Note - if you are not using any background queue for processing webhooks then yo
 
 Make sure you set your shopify apps url to your Heroku app url (and make sure to use the `https` version or else the Embedded App SDK won't work) in the Shopify Partner area https://app.shopify.com/services/partners/api_clients.
 
+
 Apps using this framework
 -------------------------
 
 * [shopify-fulfillment-integration](https://github.com/Shopify/shopify-fulfillment-integration)
 * [shopify-tax-receipts](https://github.com/pickle27/shopify-tax-receipts)
 * Add yours!
+
 
 Contributing
 ------------
