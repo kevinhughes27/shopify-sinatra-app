@@ -87,9 +87,9 @@ module Sinatra
       end
 
       def authenticate(return_to = '/')
-        if shop_name = sanitize_shop_param(params)
+        if shop_name = sanitized_shop_name
           redirect_url = "/auth/shopify?shop=#{shop_name}&return_to=#{base_url}#{return_to}"
-          fullpage_redirect_to redirect_url
+          redirect_javascript redirect_url
         else
           redirect '/install'
         end
@@ -106,12 +106,38 @@ module Sinatra
         shop.save
       end
 
-      def fullpage_redirect_to(redirect_url)
-        @fullpage_redirect_to = redirect_url
+      def redirect_javascript(url)
+        erb %(
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <base target="_top">
+            <title>Redirecting…</title>
 
-        erb "<script type='text/javascript'>
-              window.top.location.href = '<%= @fullpage_redirect_to %>';
-            </script>", layout: false
+            <script type='text/javascript'>
+              // If the current window is the 'parent', change the URL by setting location.href
+              if (window.top == window.self) {
+                window.top.location.href = #{url.to_json};
+
+              // If the current window is the 'child', change the parent's URL with postMessage
+              } else {
+                message = JSON.stringify({
+                  message: 'Shopify.API.remoteRedirect',
+                  data: { location: window.location.origin + #{url.to_json} }
+                });
+                window.parent.postMessage(message, 'https://#{sanitized_shop_name}');
+              }
+            </script>
+          </head>
+          <body>
+          </body>
+        </html>
+        %), layout: false
+      end
+
+      def sanitized_shop_name
+        @sanitized_shop_name ||= sanitize_shop_param(params)
       end
 
       def sanitize_shop_param(params)
@@ -179,7 +205,6 @@ module Sinatra
         provider :shopify,
                  app.settings.api_key,
                  app.settings.shared_secret,
-                 redirect_uri: app.settings.redirect_uri,
 
                  scope: app.settings.scope,
 
