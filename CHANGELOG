@@ -1,3 +1,7 @@
+0.3.1
+-----
+* update authentication code for upcoming chrome changes.
+
 0.3.0
 -----
 * Remove sinatra-twitter-bootstrap dependency. Include css from cdn directly for example app.
