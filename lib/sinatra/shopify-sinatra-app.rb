@@ -133,7 +133,7 @@ module Sinatra
           <body>
           </body>
         </html>
-        %), layout: false
+        ), layout: false
       end
 
       def sanitized_shop_name
