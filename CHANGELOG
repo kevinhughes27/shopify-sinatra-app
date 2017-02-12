@@ -1,3 +1,7 @@
+0.3.3
+-----
+* fix a bug in the generator
+
 0.3.2
 -----
 * remove an extra `%` from the redirect view
