@@ -19,7 +19,7 @@ module Sinatra
       end
 
       def logout
-        session[:shopify] = nil
+        session.delete(:shopify)
       end
 
       def base_url
