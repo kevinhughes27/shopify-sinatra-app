@@ -153,7 +153,7 @@ module Sinatra
 
       def verify_shopify_webhook
         data = request.body.read.to_s
-        digest = OpenSSL::Digest::Digest.new('sha256')
+        digest = OpenSSL::Digest.new('sha256')
         calculated_hmac = Base64.encode64(OpenSSL::HMAC.digest(digest, settings.shared_secret, data)).strip
         request.body.rewind
 
