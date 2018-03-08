@@ -1,3 +1,7 @@
+0.3.4
+-----
+* rename lib to src in the example/template
+
 0.3.3
 -----
 * fix a bug in the generator

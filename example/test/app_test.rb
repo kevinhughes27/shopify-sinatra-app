@@ -1,5 +1,5 @@
 require 'test_helper'
-require './lib/app'
+require './src/app'
 
 class AppTest < Minitest::Test
   def app
