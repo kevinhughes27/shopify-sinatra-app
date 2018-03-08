@@ -265,7 +265,13 @@ class Shop < ActiveRecord::Base
     @secret ||= ENV['SECRET']
   end
 
-  attr_encrypted :token, key: secret, attribute: 'token_encrypted'
+  attr_encrypted :token,
+    key: secret,
+    attribute: 'token_encrypted',
+    mode: :single_iv_and_salt,
+    algorithm: 'aes-256-cbc',
+    insecure_mode: true
+
   validates_presence_of :name
   validates_presence_of :token, on: :create
 end
