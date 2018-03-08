@@ -1,4 +1,4 @@
-class AddIndexToShops < ActiveRecord::Migration
+class AddIndexToShops < ActiveRecord::Migration[5.1]
   def self.up
     add_index :shops, :name
   end
