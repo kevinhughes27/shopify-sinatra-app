@@ -40,7 +40,6 @@ class Generator
     file = File.open(app_dir + '/.env', 'w')
     file.write("SHOPIFY_API_KEY=your_api_key\n")
     file.write("SHOPIFY_SHARED_SECRET=your_shared_secret\n")
-    file.write("SHOPIFY_REDIRECT_URI=your_redirect_uri\n")
     file.write("SECRET=random_string_to_encrypt_credentials_with\n")
     file.close
   end

@@ -2,6 +2,7 @@
 -----
 * update to sinatra 2.0.1
 * update to attr_encrypted 3.1.0
+* remove SHOPIFY_REDIRECT_URI param
 
 0.3.4
 -----

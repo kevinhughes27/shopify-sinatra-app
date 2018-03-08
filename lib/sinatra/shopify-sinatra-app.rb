@@ -183,7 +183,6 @@ module Sinatra
 
       app.set :api_key, ENV['SHOPIFY_API_KEY']
       app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
-      app.set :redirect_uri, ENV['SHOPIFY_REDIRECT_URI']
       app.set :secret, ENV['SECRET']
 
       app.use Rack::Flash, sweep: true
