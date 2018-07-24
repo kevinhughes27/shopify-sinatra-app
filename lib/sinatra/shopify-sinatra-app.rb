@@ -218,7 +218,11 @@ module Sinatra
                                 secret: app.settings.shared_secret)
 
       app.get '/install' do
-        erb :install, layout: false
+        if params[:shop].present?
+          authenticate
+        else
+          erb :install, layout: false
+        end
       end
 
       app.post '/login' do
