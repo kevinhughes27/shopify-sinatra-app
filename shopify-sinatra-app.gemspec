@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n")
   s.executables << 'shopify-sinatra-app-generator'
 
-  s.add_runtime_dependency 'sinatra', '~> 2.0.1'
+  s.add_runtime_dependency 'sinatra', '~> 2.0.2'
   s.add_runtime_dependency 'sinatra-redis', '~> 0.3.0'
   s.add_runtime_dependency 'sinatra-activerecord', '~> 2.0.9'
   s.add_runtime_dependency 'rack-flash3', '~> 1.0.5'
