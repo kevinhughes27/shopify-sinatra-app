@@ -1,2 +1,4 @@
 *.gem
 *.sqlite3
+Gemfile.lock
+example/Gemfile.lock
