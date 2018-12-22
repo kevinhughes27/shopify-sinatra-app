@@ -1,8 +1,6 @@
 require 'sinatra/base'
-require 'sinatra/redis'
 require 'sinatra/activerecord'
 
-require 'resque'
 require 'rack-flash'
 require 'attr_encrypted'
 require 'active_support/all'
@@ -58,25 +56,11 @@ module Sinatra
         redirect request.env['sinatra.route'].split(' ').last
       end
 
-      def webhook_session(&blk)
+      def shopify_webhook(&blk)
         return unless verify_shopify_webhook
         @shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
-        shop = Shop.find_by(name: @shop_name)
-
-        if shop.present?
-          params = ActiveSupport::JSON.decode(request.body.read.to_s)
-          activate_shopify_api(shop.name, shop.token)
-          yield params
-          status 200
-        end
-      end
-
-      def webhook_job(jobKlass)
-        return unless verify_shopify_webhook
-        @shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
-        shop = Shop.find_by(name: @shop_name)
-        params = ActiveSupport::JSON.decode(request.body.read.to_s)
-        Resque.enqueue(jobKlass, shop.name, shop.token, params)
+        webhook_body = ActiveSupport::JSON.decode(request.body.read.to_s)
+        yield webhook_body
         status 200
       end
 
@@ -192,14 +176,6 @@ module Sinatra
                                      secret: app.settings.secret,
                                      expire_after: 60 * 30 # half an hour in seconds
 
-      app.set :redis_url, ENV['REDISCLOUD_URL'] || 'redis://localhost:6379/'
-      redis_uri = URI.parse(app.settings.redis_url)
-      Resque.redis = ::Redis.new(host: redis_uri.host,
-                                 port: redis_uri.port,
-                                 password: redis_uri.password)
-      Resque.redis.namespace = 'resque'
-      app.set :redis, app.settings.redis_url
-
       app.use OmniAuth::Builder do
         provider :shopify,
                  app.settings.api_key,
@@ -214,8 +190,10 @@ module Sinatra
                  }
       end
 
-      ShopifyAPI::Session.setup(api_key: app.settings.api_key,
-                                secret: app.settings.shared_secret)
+      ShopifyAPI::Session.setup(
+        api_key: app.settings.api_key,
+        secret: app.settings.shared_secret
+      )
 
       app.get '/install' do
         if params[:shop].present?
