@@ -87,31 +87,26 @@ get '/products.json' do
 end
 ```
 
-**webhook_session** - This method is for an endpoint that recieves a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block of code and yields the `webhook_data` as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
+**shopify_webhook** - This method is for an endpoint that receives a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block and yields the `webhook_body` as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
 
 ```ruby
 post '/order.json' do
-  webhook_session do |webhook_data|
+  shopify_webhook do |webhook_data|
     # do something with the data
   end
 end
 ```
 
-**webhook_job** - Its impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is usually a good idea to process webhooks in a background queue and return a `200` to Shopify immediately. This method provides this functionality using redis and resque. This method takes the name of a job class whose perform method expects a `shop_name`, `shop_token` and the `webhook_data` as a hash. The session method is useful for prototpying and experimenting but production apps should use `webhook_job`. Here is an example:
+Note this method does not active a Shopify session by default but the current_shop* methods still work. It is not advised but if you want to handle the webhook in a web request you will need to activate the ShopifyAPI session manually:
 
 ```ruby
-post '/order.json' do
-  webhook_job(OrderWebhookJob)
-end
-
-class OrderWebhookJob
-  @queue = :default
-
-  def self.perform(shop_name, shop_token, webhook_data)
-    # do something with the data
-  end
-end
+shop = Shop.find_by(name: current_shop_name)
+api_session = ShopifyAPI::Session.new(shop.name, shop.token)
+ShopifyAPI::Base.activate_session(api_session)
 ```
+
+It's impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is best practise to process webhooks in a background queue and return a `200` to Shopify immediately. Ruby has several good background job frameworks that work with Sinatra including [Sidekiq](https://github.com/mperham/sidekiq) and [Resque](https://github.com/resque/resque).
+
 
 **after_shopify_auth** - This is a private method provided with the framework that gets called whenever the app is authorized. You should fill this method in with anything you need to initialize, for example webhooks and services on Shopify or any other database models you have created specific to a shop. Note that this method will be called anytime the auth flow is completed so this method should be idempotent (running it twice has the same effect as running it once).
 
@@ -129,7 +124,7 @@ shopify-sinatra-app includes sinatra/activerecord for creating models that can b
 
 shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signaling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
-```
+```ruby
 post '/flash_message' do
   flash[:notice] = "Flash Message!"
   redirect '/'
@@ -146,7 +141,7 @@ The embedded app sdk won't load non https content so you'll need to use a forwar
 To run the app locally we use `foreman` which comes with the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart). Foreman handles running our application and setting our credentials as environment variables. To run the application type:
 
 ```
-foreman run bundle exec rackup config.ru
+PORT=4567 foreman run web
 ```
 
 Note - we use `foreman run ...` not `foreman start ...` because we only want to start the single process that is our app. This means if you add a debugger in your app it will trigger properly in the command line when the debugger is hit. If you don't have any debuggers feel free to use `foreman start -p 4567`.
@@ -194,7 +189,6 @@ You will also need to add the following (free) add-ons to your new Heroku app:
 
 ```
 heroku addons:add heroku-postgresql
-heroku addons:add rediscloud
 ```
 
 Now we can deploy the new application to Heroku. Deploying to Heroku is as simple as pushing the code using git:
@@ -217,13 +211,11 @@ We also need to set our environment variables on Heroku. The environment variabl
 rake creds2heroku
 ```
 
-and make sure you have at least 1 dyno for web and resque:
+and make sure you have at least 1 dyno for web:
 
 ```
-heroku scale web=1 resque=1
+heroku scale web=1
 ```
-
-Note - if you are not using any background queue for processing webhooks then you do not need the redis add-on or the resque dyno so you can set it to 0.
 
 Make sure you set your shopify apps url to your Heroku app url (and make sure to use the `https` version or else the Embedded App SDK won't work) in the Shopify Partner area https://app.shopify.com/services/partners/api_clients.
 
