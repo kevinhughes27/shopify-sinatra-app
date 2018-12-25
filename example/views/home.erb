@@ -4,6 +4,6 @@
 <h3>Products</h3>
 <ul>
   <% @products.each do |product| %>
-    <li><a href=<%="https://#{@shop_name}/admin/products/#{product.id}"%> target="_blank"> <%= product.id %> </a></li>
+    <li><a href=<%="https://#{@shop.myshopify_domain}/admin/products/#{product.id}"%> target="_blank"> <%= product.id %> </a></li>
   <% end %>
 </ul>
