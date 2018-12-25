@@ -21,7 +21,12 @@ module Sinatra
       end
 
       def base_url
-        @base_url ||= "#{request_protocol}://#{request.env['HTTP_HOST']}"
+        "#{request_protocol}://#{request.env['HTTP_HOST']}"
+      end
+
+      # for the esdk initializer
+      def shop_origin
+        "https://#{session[:shopify][:shop]}"
       end
 
       def shopify_session(&blk)
