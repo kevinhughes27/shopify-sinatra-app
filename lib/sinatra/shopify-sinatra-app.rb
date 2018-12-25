@@ -24,19 +24,6 @@ module Sinatra
         @base_url ||= "#{request_protocol}://#{request.env['HTTP_HOST']}"
       end
 
-      def current_shop
-        Shop.find_by(name: current_shop_name)
-      end
-
-      def current_shop_name
-        return session[:shopify][:shop] if session.key?(:shopify)
-        return @shop_name if @shop_name
-      end
-
-      def current_shop_url
-        "https://#{current_shop_name}" if current_shop_name
-      end
-
       def shopify_session(&blk)
         return_to = request.env['sinatra.route'].split(' ').last
 
@@ -49,18 +36,18 @@ module Sinatra
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
           activate_shopify_api(shop_name, token)
-          yield
+          yield shop_name
         end
       rescue ActiveResource::UnauthorizedAccess
-        clear_session current_shop
+        clear_session shop_name
         redirect request.env['sinatra.route'].split(' ').last
       end
 
       def shopify_webhook(&blk)
         return unless verify_shopify_webhook
-        @shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
+        shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
         webhook_body = ActiveSupport::JSON.decode(request.body.read.to_s)
-        yield webhook_body
+        yield shop_name, webhook_body
         status 200
       end
 
@@ -84,8 +71,9 @@ module Sinatra
         ShopifyAPI::Base.activate_session(api_session)
       end
 
-      def clear_session(shop)
+      def clear_session(shop_name)
         logout
+        shop = Shop.find_by(name: shop_name)
         shop.token = nil
         shop.save
       end

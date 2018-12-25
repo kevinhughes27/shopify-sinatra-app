@@ -11,7 +11,8 @@ class SinatraApp < Sinatra::Base
   # this is a simple example that fetches some products
   # from Shopify and displays them inside your app
   get '/' do
-    shopify_session do
+    shopify_session do |shop_name|
+      @shop_name = shop_name
       @products = ShopifyAPI::Product.find(:all, params: { limit: 10 })
       erb :home
     end
@@ -21,8 +22,8 @@ class SinatraApp < Sinatra::Base
   # and cleans up data, add to this endpoint as your app
   # stores more data.
   post '/uninstall' do
-    webhook_session do |params|
-      Shop.find_by(name: current_shop_name).destroy
+    webhook_session do |shop_name, params|
+      Shop.find_by(name: shop_name).destroy
     end
   end
 

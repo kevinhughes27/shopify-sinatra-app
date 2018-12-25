@@ -80,18 +80,18 @@ Shopify::Methods
 
 ```ruby
 get '/products.json' do
-  shopify_session do
+  shopify_session do |shop_name|
     products = ShopifyAPI::Product.all(limit: 5)
     products.to_json
   end
 end
 ```
 
-**shopify_webhook** - This method is for an endpoint that receives a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block and yields the `webhook_body` as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
+**shopify_webhook** - This method is for an endpoint that receives a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block and yields the `shop_name` and `webhook_body` as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
 
 ```ruby
 post '/order.json' do
-  shopify_webhook do |webhook_data|
+  shopify_webhook do |shop_name, webhook_data|
     # do something with the data
   end
 end
@@ -112,17 +112,11 @@ It's impossible to control the flow of webhooks to your app from Shopify especia
 
 **logout** - This method clears the current session
 
-**current_shop_name** - Returns the name of the current shop (format: example.myshopify.com)
-
-**current_shop_url** - Returns the url of the current shop (format: https://example.myshopify.com)
-
-**current_shop** - Returns the activerecord model of the current shop. Use carefully!
-
 **base_url** - This returns the url of the app
 
 shopify-sinatra-app includes sinatra/activerecord for creating models that can be persisted in the database. You might want to read more about sinatra/activerecord and the methods it makes available to you: [https://github.com/janko-m/sinatra-activerecord](https://github.com/janko-m/sinatra-activerecord)
 
-shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signaling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
+shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
 ```ruby
 post '/flash_message' do
