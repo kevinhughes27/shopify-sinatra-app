@@ -18,10 +18,7 @@ module Sinatra
 
       def logout
         session.delete(:shopify)
-      end
-
-      def base_url
-        "#{request_protocol}://#{request.env['HTTP_HOST']}"
+        session.clear
       end
 
       # for the esdk initializer
@@ -30,13 +27,14 @@ module Sinatra
       end
 
       def shopify_session(&blk)
-        return_to = request.env['sinatra.route'].split(' ').last
+        return_to = request.path
+        return_params = request.params
 
-        if !session.key?(:shopify)
-          authenticate(return_to)
-        elsif params[:shop].present? && session[:shopify][:shop] != sanitize_shop_param(params)
+        if no_session?
+          authenticate(return_to, return_params)
+        elsif different_shop?
           logout
-          authenticate(return_to)
+          authenticate(return_to, return_params)
         else
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
@@ -45,7 +43,7 @@ module Sinatra
         end
       rescue ActiveResource::UnauthorizedAccess
         clear_session shop_name
-        redirect request.env['sinatra.route'].split(' ').last
+        redirect request.path
       end
 
       def shopify_webhook(&blk)
@@ -62,8 +60,21 @@ module Sinatra
         request.secure? ? 'https' : 'http'
       end
 
-      def authenticate(return_to = '/')
+      def base_url
+        "#{request_protocol}://#{request.env['HTTP_HOST']}"
+      end
+
+      def no_session?
+        !session.key?(:shopify)
+      end
+
+      def different_shop?
+        params[:shop].present? && session[:shopify][:shop] != sanitize_shop_param(params)
+      end
+
+      def authenticate(return_to = '/', return_params = nil)
         if shop_name = sanitized_shop_name
+          session[:return_params] = return_params if return_params
           redirect_url = "/auth/shopify?shop=#{shop_name}&return_to=#{base_url}#{return_to}"
           redirect_javascript redirect_url
         else
@@ -221,6 +232,11 @@ module Sinatra
         after_shopify_auth()
 
         return_to = env['omniauth.params']['return_to']
+        return_params = session[:return_params]
+        session.delete(:return_params)
+
+        return_to += "?#{return_params.to_query}" if return_params.present?
+
         redirect return_to
       end
 

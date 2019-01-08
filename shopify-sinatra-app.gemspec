@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'shopify-sinatra-app'
-  s.version = '0.6.0'
+  s.version = '0.7.0'
 
   s.summary     = 'A classy shopify app'
   s.description = 'A Sinatra extension for building Shopify Apps. Akin to the shopify_app gem but for Sinatra'
