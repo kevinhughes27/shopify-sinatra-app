@@ -1,3 +1,9 @@
+0.7.0
+-----
+* make base_url private (users can add back in their app easily if needed)
+* store request params in the session so they can be retrieved after the omniauth flow. This fixes app actions from the admin if the user's session has expired
+* refactored some smaller methods to make the shopify_session method easier on the eyes.
+
 0.6.0
 -----
 * remove current_shop* methods in favor of yielding shop_name to the block methods
