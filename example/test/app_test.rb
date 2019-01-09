@@ -59,7 +59,7 @@ class AppTest < Minitest::Test
     set_session
     SinatraApp.any_instance.expects(:activate_shopify_api).with(@shop_name, 'token')
     SinatraApp.any_instance.expects(:clear_session)
-    ShopifyAPI::Product.expects(:find).raises(ActiveResource::UnauthorizedAccess.new('UnauthorizedAccess'))
+    ShopifyAPI::Shop.expects(:current).raises(ActiveResource::UnauthorizedAccess.new('UnauthorizedAccess'))
     get '/'
     assert_equal 302, last_response.status
     assert_equal 'http://example.org/', last_response.location
