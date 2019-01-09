@@ -1,6 +1,16 @@
 require 'test_helper'
 require './src/app'
 
+class MockShop
+  def initialize(shop_name)
+    @shop_name = shop_name
+  end
+
+  def myshopify_domain
+    @shop_name
+  end
+end
+
 class AppTest < Minitest::Test
   def app
     SinatraApp
@@ -8,10 +18,12 @@ class AppTest < Minitest::Test
 
   def setup
     @shop_name = 'testshop.myshopify.com'
+    @shopify_shop = MockShop.new(@shop_name)
   end
 
   def test_root_with_session
     set_session
+    fake 'https://testshop.myshopify.com/admin/shop.json', body: {myshopify_domain: @shop_name}.to_json
     fake 'https://testshop.myshopify.com/admin/products.json?limit=10', body: '{}'
     get '/'
     assert last_response.ok?
@@ -20,6 +32,7 @@ class AppTest < Minitest::Test
   def test_root_with_session_activates_api
     set_session
     SinatraApp.any_instance.expects(:activate_shopify_api).with(@shop_name, 'token')
+    ShopifyAPI::Shop.expects(:current).returns(@shopify_shop)
     ShopifyAPI::Product.expects(:find).returns([])
     get '/'
     assert last_response.ok?

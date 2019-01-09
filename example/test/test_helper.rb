@@ -1,3 +1,5 @@
+$VERBOSE = nil
+
 ENV['RACK_ENV'] = 'test'
 ENV['SECRET'] = 'secret'
 
