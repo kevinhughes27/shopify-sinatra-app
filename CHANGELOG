@@ -1,3 +1,7 @@
+0.8.0
+-----
+* Shopify updated the way sessions are created: https://github.com/Shopify/shopify_api/blob/master/README.md#-breaking-change-notice-for-version-700-, updating code to reflect these changes.
+
 0.7.0
 -----
 * make base_url private (users can add back in their app easily if needed)
