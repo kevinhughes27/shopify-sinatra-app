@@ -23,8 +23,8 @@ class AppTest < Minitest::Test
 
   def test_root_with_session
     set_session
-    fake 'https://testshop.myshopify.com/admin/shop.json', body: {myshopify_domain: @shop_name}.to_json
-    fake 'https://testshop.myshopify.com/admin/products.json?limit=10', body: '{}'
+    fake 'https://testshop.myshopify.com/admin/api/2019-04/shop.json', body: {myshopify_domain: @shop_name}.to_json
+    fake 'https://testshop.myshopify.com/admin/api/2019-04/products.json?limit=10', body: '{}'
     get '/'
     assert last_response.ok?
   end
