@@ -83,7 +83,7 @@ module Sinatra
       end
 
       def activate_shopify_api(shop_name, token)
-        api_session = ShopifyAPI::Session.new(domain: shop_name, token: token, api_version: '2019-04')
+        api_session = ShopifyAPI::Session.new(domain: shop_name, token: token, api_version: settings.api_version)
         ShopifyAPI::Base.activate_session(api_session)
       end
 
@@ -167,6 +167,7 @@ module Sinatra
       app.enable :sessions
       app.enable :inline_templates
 
+      app.set :api_version, '2019-07'
       app.set :scope, 'read_products, read_orders'
 
       app.set :api_key, ENV['SHOPIFY_API_KEY']
