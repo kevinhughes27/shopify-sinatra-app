@@ -1,3 +1,11 @@
+0.10.0
+------
+* Add the api_version to settings and update to 2019-07
+
+0.9.0
+-----
+* set secure and and same_site options on the session cookie. Fixes auth with the upcoming chrome 80 release
+
 0.8.0
 -----
 * Shopify updated the way sessions are created: https://github.com/Shopify/shopify_api/blob/master/README.md#-breaking-change-notice-for-version-700-, updating code to reflect these changes.
