@@ -128,7 +128,7 @@ note - a flash must be followed by a redirect or it won't work!
 
 Developing
 ----------
-The embedded app sdk won't load non https content so you'll need to use a forwarding service like [ngrok](https://ngrok.com/) or [forwardhq](https://forwardhq.com/). Set your application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to your forwarded url. However The redirect_uri should still be `http://localhost:4567/auth/shopify/callback` which will allow you to install your app on a live shop while running it locally.
+The embedded app sdk won't load non https content so you'll need to use a forwarding service like [ngrok](https://ngrok.com/) or [forwardhq](https://forwardhq.com/). Set your application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to your forwarded url and set the redirect_uri to your forwarded url + `/auth/shopify/callback` which will allow you to install your app on a live shop while running it locally.
 
 To run the app locally we use `foreman` which comes with the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart). Foreman handles running our application and setting our credentials as environment variables. To run the application type:
 
