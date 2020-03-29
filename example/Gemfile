@@ -3,7 +3,7 @@ ruby '2.6.3'
 
 gem 'shopify-sinatra-app', path: '../'
 gem 'sinatra-activerecord'
-gem 'rack-flash3', require: 'rack-flash'
+gem 'sinatra-flash'
 
 group :production do
   gem 'pg'

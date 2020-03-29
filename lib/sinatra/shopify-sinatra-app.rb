@@ -1,7 +1,6 @@
 require 'sinatra/base'
 require 'sinatra/activerecord'
 
-require 'rack-flash'
 require 'attr_encrypted'
 require 'active_support/all'
 
@@ -157,15 +156,13 @@ module Sinatra
     def self.registered(app)
       app.helpers Shopify::Methods
       app.register Sinatra::ActiveRecordExtension
+      app.enable :inline_templates
 
       app.set :database_file, File.expand_path('config/database.yml')
       app.set :views, File.expand_path('views')
       app.set :public_folder, File.expand_path('public')
       app.set :erb, layout: :'layouts/application'
       app.set :protection, except: :frame_options
-
-      app.enable :sessions
-      app.enable :inline_templates
 
       app.set :api_version, '2019-07'
       app.set :scope, 'read_products, read_orders'
@@ -174,7 +171,6 @@ module Sinatra
       app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
       app.set :secret, ENV['SECRET']
 
-      app.use Rack::Flash, sweep: true
       app.use Rack::MethodOverride
       app.use Rack::Session::Cookie, key: 'rack.session',
                                      path: '/',

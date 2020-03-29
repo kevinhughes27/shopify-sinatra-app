@@ -1,7 +1,9 @@
 require 'sinatra/shopify-sinatra-app'
+require 'sinatra/flash'
 
 class SinatraApp < Sinatra::Base
   register Sinatra::Shopify
+  register Sinatra::Flash
 
   # set the scope that your app needs, read more here:
   # http://docs.shopify.com/api/tutorials/oauth
