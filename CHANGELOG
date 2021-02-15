@@ -1,5 +1,13 @@
+0.12.0
+------
+* Update to use the Shopify AppBridge instead of the ESDK
+  * This change is mostly to generated files so you'll need to apply those updates
+    to your own versions.
+* shop_origin no longer includes protocol
+* return_to re-worked to function with the AppBridge
+
 0.11.0
-----------
+------
 * remove rack-flash3 use sinatra-flash instead
 * remove a duplicate config of sessions that was breaking the same_site fix
 * remove a runtime dependency that didn't end up being used for the same_site fix but was added anyways

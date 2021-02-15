@@ -1,7 +1,10 @@
 <script type="text/javascript">
-  ShopifyApp.ready(function(){
-    ShopifyApp.Bar.initialize({
-      icon: '<%= "#{base_url}/icon.png" %>'
-    });
+  var AppBridge = window['app-bridge'];
+
+  var actions = AppBridge.actions;
+  var TitleBar = actions.TitleBar;
+
+  var titleBar = TitleBar.create(app, {
+    icon: '<%= "#{base_url}/icon.png" %>'
   });
 </script>

@@ -20,9 +20,9 @@ module Sinatra
         session.clear
       end
 
-      # for the esdk initializer
+      # for the app bridge initializer
       def shop_origin
-        "https://#{session[:shopify][:shop]}"
+        "#{session[:shopify][:shop]}"
       end
 
       def shopify_session(&blk)
@@ -74,7 +74,7 @@ module Sinatra
       def authenticate(return_to = '/', return_params = nil)
         if shop_name = sanitized_shop_name
           session[:return_params] = return_params if return_params
-          redirect_url = "/auth/shopify?shop=#{shop_name}&return_to=#{base_url}#{return_to}"
+          redirect_url = "#{base_url}/auth/shopify"
           redirect_javascript redirect_url
         else
           redirect '/install'
@@ -101,19 +101,37 @@ module Sinatra
             <meta charset="utf-8" />
             <base target="_top">
             <title>Redirecting…</title>
-
+            <script src="https://unpkg.com/@shopify/app-bridge"></script>
             <script type='text/javascript'>
+              var AppBridge = window['app-bridge'];
+              var createApp = AppBridge.createApp;
+              var actions = AppBridge.actions;
+              var Redirect = actions.Redirect;
+
+              var apiKey = '#{settings.api_key}';
+              var redirectUri = '#{url}';
+              var shopOrigin = '#{sanitized_shop_name}';
+
+              var permissionUrl = 'https://'+
+                                  shopOrigin+
+                                  '/admin'+
+                                  '/oauth/authorize?client_id='+
+                                  apiKey+
+                                  '&scope=#{settings.scope}&redirect_uri='+
+                                  redirectUri;
+
               // If the current window is the 'parent', change the URL by setting location.href
               if (window.top == window.self) {
-                window.top.location.href = #{url.to_json};
+                window.location.assign(permissionUrl);
 
-              // If the current window is the 'child', change the parent's URL with postMessage
+              // If the current window is the 'child', change the parent's URL with Shopify App Bridge's Redirect action
               } else {
-                message = JSON.stringify({
-                  message: 'Shopify.API.remoteRedirect',
-                  data: { location: window.location.origin + #{url.to_json} }
+                var app = createApp({
+                  apiKey: apiKey,
+                  shopOrigin: shopOrigin
                 });
-                window.parent.postMessage(message, 'https://#{sanitized_shop_name}');
+
+                Redirect.create(app).dispatch(Redirect.Action.REMOTE, permissionUrl);
               }
             </script>
           </head>
@@ -230,10 +248,10 @@ module Sinatra
 
         after_shopify_auth()
 
-        return_to = env['omniauth.params']['return_to']
         return_params = session[:return_params]
         session.delete(:return_params)
 
+        return_to = '/'
         return_to += "?#{return_params.to_query}" if return_params.present?
 
         redirect return_to

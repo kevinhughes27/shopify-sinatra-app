@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'shopify-sinatra-app'
-  s.version = '0.11.0'
+  s.version = '0.12.0'
 
   s.summary     = 'A classy shopify app'
   s.description = 'A Sinatra extension for building Shopify Apps. Akin to the shopify_app gem but for Sinatra'
@@ -19,7 +19,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'attr_encrypted', '~> 3.1.0'
 
   s.add_runtime_dependency 'shopify_api', '>= 7.0.1', '< 9.3.0'
-  s.add_runtime_dependency 'omniauth-shopify-oauth2'
+  s.add_runtime_dependency 'omniauth-shopify-oauth2', '>= 2.3.2'
+  s.add_runtime_dependency 'omniauth', '1.9.1'
 
   s.add_development_dependency 'rake', '>= 12.3.3'
   s.add_development_dependency 'sqlite3'
