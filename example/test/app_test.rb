@@ -47,13 +47,13 @@ class AppTest < Minitest::Test
 
   def test_root_with_shop_redirects_to_auth
     get '/?shop=othertestshop.myshopify.com'
-    assert_match '/auth/shopify?shop=othertestshop.myshopify.com', last_response.body
+    assert_match '/auth/shopify', last_response.body
   end
 
   def test_root_with_session_and_new_shop_redirects_to_auth
     set_session
     get '/?shop=othertestshop.myshopify.com'
-    assert_match '/auth/shopify?shop=othertestshop.myshopify.com', last_response.body
+    assert_match '/auth/shopify', last_response.body
   end
 
   def test_root_rescues_UnauthorizedAccess_clears_session_and_redirects
