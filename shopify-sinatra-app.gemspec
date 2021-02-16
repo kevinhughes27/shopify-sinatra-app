@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'shopify_api', '>= 7.0.1', '< 9.4.0'
   s.add_runtime_dependency 'omniauth-shopify-oauth2', '>= 2.3.2'
-  s.add_runtime_dependency 'omniauth', '1.9.1'
+  s.add_runtime_dependency 'omniauth', '2.0.2'
 
   s.add_development_dependency 'rake', '>= 12.3.3'
   s.add_development_dependency 'sqlite3'
