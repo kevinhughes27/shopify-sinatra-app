@@ -1,3 +1,10 @@
+1.0.0
+-----
+* Update to omniauth 2.0.4 and add rack protection authenticity token
+  * Refactored the provided routes to be simpler. Now only login and logout (no more install)
+  * shopify_webhook now defines the route because it needs to also configure ignoring csrf for the route
+  * refactored other internal methods to simplify and reduce surface area
+
 0.12.0
 ------
 * Update to use the Shopify AppBridge instead of the ESDK

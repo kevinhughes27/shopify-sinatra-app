@@ -42,18 +42,18 @@ class AppTest < Minitest::Test
   def test_root_without_session_redirects_to_install
     get '/'
     assert_equal 302, last_response.status
-    assert_equal 'http://example.org/install', last_response.location
+    assert_equal 'http://example.org/login', last_response.location
   end
 
   def test_root_with_shop_redirects_to_auth
     get '/?shop=othertestshop.myshopify.com'
-    assert_match '/auth/shopify', last_response.body
+    assert_equal 'http://example.org/login?shop=othertestshop.myshopify.com', last_response.location
   end
 
   def test_root_with_session_and_new_shop_redirects_to_auth
     set_session
     get '/?shop=othertestshop.myshopify.com'
-    assert_match '/auth/shopify', last_response.body
+    assert_equal 'http://example.org/login?shop=othertestshop.myshopify.com', last_response.location
   end
 
   def test_root_rescues_UnauthorizedAccess_clears_session_and_redirects

@@ -11,13 +11,8 @@ module Sinatra
   module Shopify
     module Methods
 
-      # designed to be overriden
+      # designed to be overridden
       def after_shopify_auth
-      end
-
-      def logout
-        session.delete(:shopify)
-        session.clear
       end
 
       # for the app bridge initializer
@@ -31,35 +26,42 @@ module Sinatra
 
         if no_session?
           authenticate(return_to, return_params)
+
         elsif different_shop?
-          logout
+          clear_session
           authenticate(return_to, return_params)
+
         else
           shop_name = session[:shopify][:shop]
           token = session[:shopify][:token]
           activate_shopify_api(shop_name, token)
           yield shop_name
         end
-      rescue ActiveResource::UnauthorizedAccess
-        clear_session shop_name
-        redirect request.path
-      end
 
-      def shopify_webhook(&blk)
-        return unless verify_shopify_webhook
-        shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
-        webhook_body = ActiveSupport::JSON.decode(request.body.read.to_s)
-        yield shop_name, webhook_body
-        status 200
+      rescue ActiveResource::UnauthorizedAccess
+        clear_session
+
+        shop = Shop.find_by(name: shop_name)
+        shop.token = nil
+        shop.save
+
+        redirect request.path
       end
 
       private
 
-      def request_protocol
-        request.secure? ? 'https' : 'http'
+      def authenticate(return_to = '/', return_params = nil)
+        session[:return_params] = return_params if return_params
+
+        if shop_name = sanitized_shop_param(params)
+          redirect "/login?shop=#{shop_name}"
+        else
+          redirect '/login'
+        end
       end
 
       def base_url
+        request_protocol = request.secure? ? 'https' : 'http'
         "#{request_protocol}://#{request.env['HTTP_HOST']}"
       end
 
@@ -68,17 +70,12 @@ module Sinatra
       end
 
       def different_shop?
-        params[:shop].present? && session[:shopify][:shop] != sanitize_shop_param(params)
+        params[:shop].present? && session[:shopify][:shop] != sanitized_shop_param(params)
       end
 
-      def authenticate(return_to = '/', return_params = nil)
-        if shop_name = sanitized_shop_name
-          session[:return_params] = return_params if return_params
-          redirect_url = "#{base_url}/auth/shopify"
-          redirect_javascript redirect_url
-        else
-          redirect '/install'
-        end
+      def clear_session
+        session.delete(:shopify)
+        session.clear
       end
 
       def activate_shopify_api(shop_name, token)
@@ -86,66 +83,15 @@ module Sinatra
         ShopifyAPI::Base.activate_session(api_session)
       end
 
-      def clear_session(shop_name)
-        logout
-        shop = Shop.find_by(name: shop_name)
-        shop.token = nil
-        shop.save
+      def receive_webhook(&blk)
+        return unless verify_shopify_webhook
+        shop_name = request.env['HTTP_X_SHOPIFY_SHOP_DOMAIN']
+        webhook_body = ActiveSupport::JSON.decode(request.body.read.to_s)
+        yield shop_name, webhook_body
+        status 200
       end
 
-      def redirect_javascript(url)
-        erb %(
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8" />
-            <base target="_top">
-            <title>Redirecting…</title>
-            <script src="https://unpkg.com/@shopify/app-bridge"></script>
-            <script type='text/javascript'>
-              var AppBridge = window['app-bridge'];
-              var createApp = AppBridge.createApp;
-              var actions = AppBridge.actions;
-              var Redirect = actions.Redirect;
-
-              var apiKey = '#{settings.api_key}';
-              var redirectUri = '#{url}';
-              var shopOrigin = '#{sanitized_shop_name}';
-
-              var permissionUrl = 'https://'+
-                                  shopOrigin+
-                                  '/admin'+
-                                  '/oauth/authorize?client_id='+
-                                  apiKey+
-                                  '&scope=#{settings.scope}&redirect_uri='+
-                                  redirectUri;
-
-              // If the current window is the 'parent', change the URL by setting location.href
-              if (window.top == window.self) {
-                window.location.assign(permissionUrl);
-
-              // If the current window is the 'child', change the parent's URL with Shopify App Bridge's Redirect action
-              } else {
-                var app = createApp({
-                  apiKey: apiKey,
-                  shopOrigin: shopOrigin
-                });
-
-                Redirect.create(app).dispatch(Redirect.Action.REMOTE, permissionUrl);
-              }
-            </script>
-          </head>
-          <body>
-          </body>
-        </html>
-        ), layout: false
-      end
-
-      def sanitized_shop_name
-        @sanitized_shop_name ||= sanitize_shop_param(params)
-      end
-
-      def sanitize_shop_param(params)
+      def sanitized_shop_param(params)
         return unless params[:shop].present?
         name = params[:shop].to_s.strip
         name += '.myshopify.com' if !name.include?('myshopify.com') && !name.include?('.')
@@ -165,21 +111,30 @@ module Sinatra
         if calculated_hmac == request.env['HTTP_X_SHOPIFY_HMAC_SHA256']
           true
         else
-          puts 'Shopify Webhook verifictation failed!'
+          puts 'Shopify Webhook verification failed!'
           false
         end
+      end
+    end
+
+    def shopify_webhook(route, &blk)
+      settings.webhook_routes << route
+      post(route) do
+        receive_webhook(&blk)
       end
     end
 
     def self.registered(app)
       app.helpers Shopify::Methods
       app.register Sinatra::ActiveRecordExtension
-      app.enable :inline_templates
 
       app.set :database_file, File.expand_path('config/database.yml')
+
+      app.set :erb, layout: :'layouts/application'
       app.set :views, File.expand_path('views')
       app.set :public_folder, File.expand_path('public')
-      app.set :erb, layout: :'layouts/application'
+      app.enable :inline_templates
+
       app.set :protection, except: :frame_options
 
       app.set :api_version, '2019-07'
@@ -189,7 +144,12 @@ module Sinatra
       app.set :shared_secret, ENV['SHOPIFY_SHARED_SECRET']
       app.set :secret, ENV['SECRET']
 
+      # csrf needs to be disabled for webhook routes
+      app.set :webhook_routes, ['/uninstall']
+
+      # add support for put/patch/delete
       app.use Rack::MethodOverride
+
       app.use Rack::Session::Cookie, key: 'rack.session',
                                      path: '/',
                                      secure: true,
@@ -197,18 +157,27 @@ module Sinatra
                                      secret: app.settings.secret,
                                      expire_after: 60 * 30 # half an hour in seconds
 
+      app.use Rack::Protection::AuthenticityToken, allow_if: lambda { |env|
+        app.settings.webhook_routes.include?(env["PATH_INFO"])
+      }
+
+      OmniAuth.config.allowed_request_methods = [:post]
+
       app.use OmniAuth::Builder do
         provider :shopify,
-                 app.settings.api_key,
-                 app.settings.shared_secret,
+          app.settings.api_key,
+          app.settings.shared_secret,
+          scope: app.settings.scope,
+          setup: lambda { |env|
+            shop = if env['REQUEST_METHOD'] == 'POST'
+              env['rack.request.form_hash']['shop']
+            else
+              Rack::Utils.parse_query(env['QUERY_STRING'])['shop']
+            end
 
-                 scope: app.settings.scope,
-
-                 setup: lambda { |env|
-                   params = Rack::Utils.parse_query(env['QUERY_STRING'])
-                   site_url = "https://#{params['shop']}"
-                   env['omniauth.strategy'].options[:client_options][:site] = site_url
-                 }
+            site_url = "https://#{shop}"
+            env['omniauth.strategy'].options[:client_options][:site] = site_url
+          }
       end
 
       ShopifyAPI::Session.setup(
@@ -216,21 +185,13 @@ module Sinatra
         secret: app.settings.shared_secret
       )
 
-      app.get '/install' do
-        if params[:shop].present?
-          authenticate
-        else
-          erb :install, layout: false
-        end
-      end
-
-      app.post '/login' do
-        authenticate
+      app.get '/login' do
+        erb :login, layout: false
       end
 
       app.get '/logout' do
-        logout
-        redirect '/install'
+        clear_session
+        redirect '/login'
       end
 
       app.get '/auth/shopify/callback' do

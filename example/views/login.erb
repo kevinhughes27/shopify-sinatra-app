@@ -28,13 +28,15 @@
   <div style="margin-top: 30px"></div>
 
   <div class="container">
-    <form role="form" class="form-large" action="/login" method="post">
-        <div class="input-group form-wide">
-          <input class="form-control" type="url" name="shop" placeholder="Shop URL">
-          <span class="input-group-btn">
-            <input class="btn" type="submit" value="Install App" />
-          </span>
-        </div>
+    <form id="login" role="form" class="form-large" action="/auth/shopify" method="post">
+      <input type="hidden" name="authenticity_token" value="<%= env['rack.session'][:csrf] %>" />
+      <div class="input-group form-wide">
+        <input class="form-control" name="shop" value="<%= params['shop'] %>" placeholder="your-shop-url.myshopify.com">
+        <span class="input-group-btn">
+          <input class="btn" type="submit" value="Login" />
+        </span>
+      </div>
     </form>
   </div>
-</body>
+ </body>
+
