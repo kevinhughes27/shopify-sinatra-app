@@ -5,7 +5,7 @@ rvm:
 
 gemfile: example/Gemfile
 
-script: "./test.sh"
+script: "./bin/ci.sh"
 
 notifications:
   email:
