@@ -58,7 +58,10 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 ### Setting the app to use your Shopify API credentials
 
-You'll need to create a Shopify Partner Account and a new application. You can make an account [here](http://www.shopify.ca/partners) and see this [tutorial](http://docs.shopify.com/api/the-basics/getting-started) for creating a new application. This app uses the default redirect_uri from omniauth `<your domain>/auth/shopify/callback` so set it accordingly when creating your app.
+You'll need to create a Shopify Partner Account and a new application. You can make an account [here](http://www.shopify.ca/partners) and see this [tutorial](http://docs.shopify.com/api/the-basics/getting-started) for creating a new application. The requires 2 redirects configured:
+
+  * the default redirect_uri from omniauth `<your domain>/auth/shopify/callback`
+  * and `<your domain>/login`
 
 Note - The shopify-sinatra-app creates an embedded app! You need change the embedded setting to `enabled` in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) for your app. If you don't want your app to be embedded then remove the related code in `layout/application.erb` and delete the `layout/_top_bar.erb` file and the references to it in the other views.
 
@@ -123,17 +126,17 @@ note - a flash must be followed by a redirect or it won't work!
 
 Developing
 ----------
-The embedded app sdk won't load non https content so you'll need to use a forwarding service like [ngrok](https://ngrok.com/) or [forwardhq](https://forwardhq.com/). Set your application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to your forwarded url and set the redirect_uri to your forwarded url + `/auth/shopify/callback` which will allow you to install your app on a live shop while running it locally.
+The embedded app sdk won't load non https content so you'll need to use a real domain or a forwarding service like [ngrok](https://ngrok.com/). Set your application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to your forwarded url and set the redirect_uri to your forwarded url + `/auth/shopify/callback` which will allow you to install your app on a live shop while running it locally.
 
-To run the app locally we use `foreman` which comes with the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart). Foreman handles running our application and setting our credentials as environment variables. To run the application type:
+To run the app locally we use [overmind](https://github.com/DarthSim/overmind) a tool for running multiple process and setting our credentials as environment variables. To run the application run:
 
 ```
-PORT=4567 foreman run web
+overmind start
 ```
 
-Note - we use `foreman run ...` not `foreman start ...` because we only want to start the single process that is our app. This means if you add a debugger in your app it will trigger properly in the command line when the debugger is hit. If you don't have any debuggers feel free to use `foreman start -p 4567`.
+To connect to a single process to use a debugger/break point use `overmind connect <process>`
 
-To debug your app simply add `require 'byebug'` at the top and then type `byebug` where you would like to drop into an interactive session. You may also want to try out [Pry](http://pryrepl.org/).
+To debug your app add `require 'byebug'` at the top and then add `byebug` to your code where you would like to drop into an interactive session. You may also want to try out [Pry](http://pryrepl.org/).
 
 If you are testing webhooks locally make sure they also go through the forwarded url and not `localhost`.
 
@@ -151,60 +154,6 @@ bundle exec rake test
 `test:prepare` will initialize your testing database using the `seeds.rb` file. If you have added additional models you can add them here.
 
 Checkout the contents of the `app_test.rb` file and the `test_helper.rb` and modify them as you add functionality to your app. You can also check the tests of other apps using this framework to see more about how to write tests for your own app.
-
-
-Deploying
----------
-
-This template was created with deploying to Heroku in mind. Heroku is a cloud based app hosting provider that makes it easy to get an application into a product environment.
-
-Before you can get started with Heroku you need to create a git repo for you application:
-
-```
-git init
-git add .
-git commit -m "initial commit"
-```
-
-Now you can create a new heroku application. Download the [Heroku Toolbelt](https://devcenter.heroku.com/articles/quickstart) and run the following command to create a new application:
-
-```
-heroku apps:create <your new app name>
-```
-
-You will also need to add the following (free) add-ons to your new Heroku app:
-
-```
-heroku addons:add heroku-postgresql
-```
-
-Now we can deploy the new application to Heroku. Deploying to Heroku is as simple as pushing the code using git:
-
-```
-git push heroku master
-```
-
-A `rake deploy2heroku` command is included in the generated Rakefile which does just this.
-
-Now that our application is deployed we need to run `rake db:migrate` to initialize our database on Heroku. To do this run:
-
-```
-heroku run rake db:migrate
-```
-
-We also need to set our environment variables on Heroku. The environment variables are stored in `.env` and are not tracked by git. This is to protect your credentials in the case of a source control breach. Heroku provides a command to set environment variables: `heroku config:set VAR=foo`. In the generated Rakefile there is a helper method that will properly set all the variables in your `.env` file:
-
-```
-rake creds2heroku
-```
-
-and make sure you have at least 1 dyno for web:
-
-```
-heroku scale web=1
-```
-
-Make sure you set your shopify apps url to your Heroku app url (and make sure to use the `https` version or else the Embedded App SDK won't work) in the Shopify Partner area https://app.shopify.com/services/partners/api_clients.
 
 
 Apps using this framework
