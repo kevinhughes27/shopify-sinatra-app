@@ -87,13 +87,11 @@ get '/products.json' do
 end
 ```
 
-**shopify_webhook** - This method is for an endpoint that receives a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block and yields the `shop_name` and `webhook_body` as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
+**shopify_webhook** - This method defines a `post` endpoint that receives a webhook from Shopify. Webhooks are a great way to keep your app in sync with a shop's data without polling. You can read more about webhooks [here](http://docs.shopify.com/api/tutorials/using-webhooks). This method also takes a block and yields the `shop_name` and `webhook_body` as a hash (note only works for json webhooks, don't use xml). Here is an example that listens to an order creation webhook:
 
 ```ruby
-post '/order.json' do
-  shopify_webhook do |shop_name, webhook_data|
-    # do something with the data
-  end
+shopify_webhook('/order.json') do |shop_name, webhook_data|
+  # do something with the data
 end
 ```
 
@@ -107,14 +105,11 @@ ShopifyAPI::Base.activate_session(api_session)
 
 It's impossible to control the flow of webhooks to your app from Shopify especially if a larger store installs your app or if a shop has a flash sale. To prevent your app from getting overloaded with webhook requests it is best practise to process webhooks in a background queue and return a `200` to Shopify immediately. Ruby has several good background job frameworks that work with Sinatra including [Sidekiq](https://github.com/mperham/sidekiq) and [Resque](https://github.com/resque/resque).
 
-
 **after_shopify_auth** - This is a private method provided with the framework that gets called whenever the app is authorized. You should fill this method in with anything you need to initialize, for example webhooks and services on Shopify or any other database models you have created specific to a shop. Note that this method will be called anytime the auth flow is completed so this method should be idempotent (running it twice has the same effect as running it once).
-
-**logout** - This method clears the current session
 
 shopify-sinatra-app includes sinatra/activerecord for creating models that can be persisted in the database. You might want to read more about sinatra/activerecord and the methods it makes available to you: [https://github.com/janko-m/sinatra-activerecord](https://github.com/janko-m/sinatra-activerecord)
 
-shopify-sinatra-app also includes `rack-flash3` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
+shopify-sinatra-app also includes `sinatra-flash` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
 
 ```ruby
 post '/flash_message' do

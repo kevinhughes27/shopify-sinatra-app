@@ -23,10 +23,8 @@ class SinatraApp < Sinatra::Base
   # this endpoint recieves the uninstall webhook
   # and cleans up data, add to this endpoint as your app
   # stores more data.
-  post '/uninstall' do
-    shopify_webhook do |shop_name, params|
-      Shop.find_by(name: shop_name).destroy
-    end
+  shopify_webhook '/uninstall' do |shop_name, params|
+    Shop.find_by(name: shop_name).destroy
   end
 
   private
