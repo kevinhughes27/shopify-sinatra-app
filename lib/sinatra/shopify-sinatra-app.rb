@@ -16,8 +16,8 @@ module Sinatra
       end
 
       # for the app bridge initializer
-      def shop_origin
-        "#{session[:shopify][:shop]}"
+      def shop_host
+        "#{session[:shopify][:host]}"
       end
 
       def shopify_session(&blk)
@@ -135,7 +135,7 @@ module Sinatra
       app.set :public_folder, File.expand_path('public')
       app.enable :inline_templates
 
-      app.set :protection, except: :frame_options
+      app.set :protection, except: :frame_options, frame_ancestors: "https://admin.shopify.com;"
 
       app.set :api_version, '2019-07'
       app.set :scope, 'read_products, read_orders'
@@ -197,6 +197,7 @@ module Sinatra
       app.get '/auth/shopify/callback' do
         shop_name = params['shop']
         token = request.env['omniauth.auth']['credentials']['token']
+        host = params['host']
 
         shop = Shop.find_or_initialize_by(name: shop_name)
         shop.token = token
@@ -204,6 +205,7 @@ module Sinatra
 
         session[:shopify] = {
           shop: shop_name,
+          host: host,
           token: token
         }
 
