@@ -1,4 +1,4 @@
-shopify-sinatra-app [![Build Status](https://travis-ci.org/kevinhughes27/shopify-tax-receipts.svg)](https://travis-ci.org/kevinhughes27/shopify-sinatra-app)
+shopify-sinatra-app [![CircleCI](https://dl.circleci.com/status-badge/img/gh/kevinhughes27/shopify-sinatra-app/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/kevinhughes27/shopify-sinatra-app/tree/master)
 ===================
 
 "A classy shopify app"
