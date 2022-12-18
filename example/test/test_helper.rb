@@ -5,7 +5,7 @@ ENV['SECRET'] = 'secret'
 
 require 'minitest/autorun'
 require 'rack/test'
-require 'mocha/setup'
+require 'mocha/minitest'
 require 'fakeweb'
 
 FakeWeb.allow_net_connect = false
