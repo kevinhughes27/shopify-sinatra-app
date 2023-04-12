@@ -3,7 +3,7 @@ PATH
   specs:
     shopify-sinatra-app (1.1.1)
       activesupport
-      attr_encrypted (~> 3.1.0)
+      attr_encrypted (>= 3.1, < 4.1)
       omniauth (>= 2.0.4)
       omniauth-shopify-oauth2 (>= 2.3.2)
       shopify_api (>= 7.0.1, < 12.6)
@@ -23,7 +23,7 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    attr_encrypted (3.1.0)
+    attr_encrypted (4.0.0)
       encryptor (~> 3.0.0)
     concurrent-ruby (1.2.2)
     encryptor (3.0.0)
