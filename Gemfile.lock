@@ -96,7 +96,7 @@ GEM
       hashie
       version_gem (~> 1.1, >= 1.1.1)
     sorbet-runtime (0.5.10771)
-    sqlite3 (1.5.1-x86_64-linux)
+    sqlite3 (1.6.2-x86_64-linux)
     tilt (2.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
