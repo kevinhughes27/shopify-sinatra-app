@@ -9,7 +9,7 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      - ruby/bundle-install
+      - ruby/install-deps
       - run:
           name: Tests
           command: ./bin/ci.sh
