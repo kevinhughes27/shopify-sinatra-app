@@ -74,7 +74,7 @@ GEM
       activesupport
       omniauth-oauth2 (~> 1.5)
     pg (1.4.3)
-    rack (2.2.4)
+    rack (2.2.6.4)
     rack-protection (2.2.4)
       rack
     rack-test (2.0.2)
