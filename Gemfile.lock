@@ -72,7 +72,7 @@ GEM
     omniauth-shopify-oauth2 (2.3.2)
       activesupport
       omniauth-oauth2 (~> 1.5)
-    rack (2.2.4)
+    rack (2.2.6.4)
     rack-protection (2.2.2)
       rack
     rack-test (2.0.2)
