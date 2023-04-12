@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activesupport'
   s.add_runtime_dependency 'attr_encrypted', '~> 3.1.0'
 
-  s.add_runtime_dependency 'shopify_api', '>= 7.0.1', '< 12.5'
+  s.add_runtime_dependency 'shopify_api', '>= 7.0.1', '< 12.6'
   s.add_runtime_dependency 'omniauth-shopify-oauth2', '>= 2.3.2'
   s.add_runtime_dependency 'omniauth', '>= 2.0.4'
 
