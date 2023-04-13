@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2014_04_14_042317) do
-
+ActiveRecord::Schema[7.0].define(version: 2014_04_14_042317) do
   create_table "shops", force: :cascade do |t|
     t.string "name"
     t.string "token_encrypted"
