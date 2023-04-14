@@ -44,13 +44,9 @@ This will create a new skeleton shopify-sinatra-app. The generator will create s
 
 `Procfile` --> Specific for deploying to Heroku, this file tells heroku how to run the app
 
-`public/icon.png` --> This icon file is used by the Shopify Embedded App SKD and is shown in the menu bar of your embedded app
-
 `Rakefile` --> includes some helper methods etc for running and managing the app. Standard for ruby based projects
 
-`views/layouts/appliction.erb` --> This is the layout file that all templates will use unless otherwise specified. It sets up some defaults for using the Shopify Embedded App SDK and Twitter Bootstrap for styling
-
-`views/_top_bar.erb` --> This is a partial view that describes the top bar inside a Shopify Embedded App. It also has some code to *forward* flash messages to the Embedded App SKD
+`views/layouts/appliction.erb` --> This is the layout file that all templates will use unless otherwise specified.
 
 `views/*` --> The other views used by the app. You'll probably make a lot of changes to home.erb and install.erb to customize the experience for your app
 
@@ -62,8 +58,6 @@ You'll need to create a Shopify Partner Account and a new application. You can m
 
   * the default redirect_uri from omniauth `<your domain>/auth/shopify/callback`
   * and `<your domain>/login`
-
-Note - The shopify-sinatra-app creates an embedded app! You need change the embedded setting to `enabled` in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) for your app. If you don't want your app to be embedded then remove the related code in `layout/application.erb` and delete the `layout/_top_bar.erb` file and the references to it in the other views.
 
 After creating your new application you need to edit the `.env` file and add the following lines:
 
@@ -112,21 +106,11 @@ It's impossible to control the flow of webhooks to your app from Shopify especia
 
 shopify-sinatra-app includes sinatra/activerecord for creating models that can be persisted in the database. You might want to read more about sinatra/activerecord and the methods it makes available to you: [https://github.com/janko-m/sinatra-activerecord](https://github.com/janko-m/sinatra-activerecord)
 
-shopify-sinatra-app also includes `sinatra-flash` and the flash messages are forwarded to the Shopify Embedded App SDK (see the code in `views/layouts/application.erb`). Flash messages are useful for signalling to your users that a request was successful without changing the page. The following is an example of how to use a flash message in a route:
-
-```ruby
-post '/flash_message' do
-  flash[:notice] = "Flash Message!"
-  redirect '/'
-end
-```
-
-note - a flash must be followed by a redirect or it won't work!
-
 
 Developing
 ----------
-The embedded app sdk won't load non https content so you'll need to use a real domain or a forwarding service like [ngrok](https://ngrok.com/). Set your application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to your forwarded url and set the redirect_uri to your forwarded url + `/auth/shopify/callback` which will allow you to install your app on a live shop while running it locally.
+
+The app needs to be accessible on the internet in order to receive webhooks so you'll need to use a real domain or a forwarding service like [ngrok](https://ngrok.com/). Set your application url in the [Shopify Partner area](https://app.shopify.com/services/partners/api_clients) to your forwarded url and set the redirect_uri to your forwarded url + `/auth/shopify/callback` which will allow you to install your app on a live shop while running it locally.
 
 To run the app locally we use [overmind](https://github.com/DarthSim/overmind) a tool for running multiple process and setting our credentials as environment variables. To run the application run:
 
@@ -137,8 +121,6 @@ overmind start
 To connect to a single process to use a debugger/break point use `overmind connect <process>`
 
 To debug your app add `require 'byebug'` at the top and then add `byebug` to your code where you would like to drop into an interactive session. You may also want to try out [Pry](http://pryrepl.org/).
-
-If you are testing webhooks locally make sure they also go through the forwarded url and not `localhost`.
 
 
 Testing

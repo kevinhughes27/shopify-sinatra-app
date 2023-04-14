@@ -15,11 +15,6 @@ module Sinatra
       def after_shopify_auth
       end
 
-      # for the app bridge initializer
-      def shop_host
-        "#{session[:shopify][:host]}"
-      end
-
       def shopify_session(&blk)
         return_to = request.path
         return_params = request.params
@@ -117,37 +112,6 @@ module Sinatra
       end
     end
 
-    # needs to be dynamic to incude the current shop
-    class ContentSecurityPolicy < Rack::Protection::Base
-      def csp_policy(env)
-        "frame-ancestors: #{current_shop(env)} https://admin.shopify.com;"
-      end
-
-      def call(env)
-        status, headers, body = @app.call(env)
-        header = 'Content-Security-Policy'
-        headers[header] ||= csp_policy(env) if html? headers
-        [status, headers, body]
-      end
-
-      private
-
-      def current_shop(env)
-        s = session(env)
-        if s.has_key?("return_params")
-          "https://#{s["return_params"]["shop"]}"
-        elsif s.has_key?(:shopify)
-          "https://#{s[:shopify][:shop]}"
-        end
-      end
-
-      def html?(headers)
-        return false unless (header = headers.detect { |k, _v| k.downcase == 'content-type' })
-
-        options[:html_types].include? header.last[%r{^\w+/\w+}]
-      end
-    end
-
     def shopify_webhook(route, &blk)
       settings.webhook_routes << route
       post(route) do
@@ -165,8 +129,6 @@ module Sinatra
       app.set :views, File.expand_path('views')
       app.set :public_folder, File.expand_path('public')
       app.enable :inline_templates
-
-      app.set :protection, except: :frame_options
 
       app.set :api_version, '2019-07'
       app.set :scope, 'read_products, read_orders'
@@ -188,8 +150,7 @@ module Sinatra
                                      secret: app.settings.secret,
                                      expire_after: 60 * 30 # half an hour in seconds
 
-      app.use Shopify::ContentSecurityPolicy
-
+      app.use Rack::Protection
       app.use Rack::Protection::AuthenticityToken, allow_if: lambda { |env|
         app.settings.webhook_routes.include?(env["PATH_INFO"])
       }
