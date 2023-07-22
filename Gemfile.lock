@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    shopify-sinatra-app (1.2.0)
+    shopify-sinatra-app (1.2.1)
       activesupport
       attr_encrypted
       omniauth (>= 2.0.4)

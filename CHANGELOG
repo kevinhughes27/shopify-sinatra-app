@@ -1,3 +1,7 @@
+1.2.1
+-----
+* shop record may already be removed
+
 1.2.0
 -----
 * remove support for embedded apps

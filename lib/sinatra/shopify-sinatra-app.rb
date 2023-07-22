@@ -36,9 +36,10 @@ module Sinatra
       rescue ActiveResource::UnauthorizedAccess
         clear_session
 
-        shop = Shop.find_by(name: shop_name)
-        shop.token = nil
-        shop.save
+        if shop = Shop.find_by(name: shop_name)
+          shop.token = nil
+          shop.save
+        end
 
         redirect request.path
       end
